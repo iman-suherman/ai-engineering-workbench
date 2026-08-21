@@ -1,0 +1,38 @@
+# Sample registry for a fictional demo platform.
+# Replace these entries with YOUR services before using in a real team.
+meta:
+  description: Example service registry for ai-engineering-workbench
+  github_org_env: GITHUB_ORG
+
+defaults:
+  local_path_pattern: "../{repo}"
+  default_branches: [main, master, develop]
+
+services:
+  checkout-api:
+    repo: checkout-api
+    local_path: "../checkout-api"
+    description: HTTP API for cart and checkout
+    related_services: [payments-api, inventory-service]
+    tags: [api, checkout]
+
+  payments-api:
+    repo: payments-api
+    local_path: "../payments-api"
+    description: Payment authorization and capture
+    related_services: [checkout-api]
+    tags: [api, payments]
+
+  inventory-service:
+    repo: inventory-service
+    local_path: "../inventory-service"
+    description: Stock levels and reservations
+    related_services: [checkout-api]
+    tags: [service, inventory]
+
+  edge-gateway:
+    repo: edge-gateway-config
+    local_path: "../edge-gateway-config"
+    description: Edge / API gateway route configuration
+    related_services: [checkout-api, payments-api]
+    tags: [infra, gateway]

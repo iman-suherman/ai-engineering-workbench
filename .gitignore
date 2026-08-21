@@ -1,0 +1,12 @@
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+.env
+.env.*
+!.env.example
+*.local.md
+.venv/
+node_modules/
+.agent/

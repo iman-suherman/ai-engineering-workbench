@@ -1,0 +1,48 @@
+---
+description: Initiate workbench sessions; wire agent stack and absorb knowledge before new enquiries
+alwaysApply: true
+---
+
+# Initiate AI Engineering Workbench
+
+When a session starts in this repo, or the user opens a new enquiry, **orient first**.
+Do not answer repository-state questions from memory alone.
+
+## What this repo is
+
+Engineering productivity and knowledge orchestration hub.
+Not a bot that sends messages. Humans review and copy/paste every external reply.
+
+## Wire the agent stack
+
+| Layer | Canonical path | Role |
+|-------|----------------|------|
+| System instructions | `.github/copilot-instructions.md` | Operating defaults, output shape, knowledge nav |
+| Agent behaviour | `AGENTS.md` | Mission, truth hierarchy, investigation rules |
+| Prompts | `prompts/` (also `.github/prompts/`) | Task templates |
+| Skills | `.github/skills/` | Reusable skill definitions |
+| Cursor rules | `.cursor/rules/` | Always-on policy |
+| Knowledge | `knowledge/` | Registry, architecture, services, integrations |
+| Living context | `context/` | Sprint, incidents, investigations, decisions |
+| Workflows | `workflows/` | End-to-end playbooks |
+| Start CLI | `scripts/start.sh` via `npm run start` | Bootstrap enquiry reports |
+
+## Session bootstrap
+
+1. Skim `AGENTS.md` + `.github/copilot-instructions.md`.
+2. Open `knowledge/service-registry.yaml`.
+3. Check `knowledge/local-repos.md` and sibling checkouts.
+4. Skim `context/` for urgency constraints.
+5. Pick matching `prompts/*.md` and `workflows/*.md`.
+6. Only then inspect live repos/PRs. Workbench docs navigate; live state decides.
+
+## Hard boundaries
+
+- Do not send Chat/email/Jira/Slack.
+- Do not invent PRs, tickets, dates, or deploy status.
+- Do not modify other repos unless explicitly instructed.
+- Never add `Co-authored-by` on commits.
+
+## Ready check
+
+You are ready when you can name: the prompt/workflow in use, affected services from the registry, whether evidence will come from sibling checkouts and/or `gh`, and that the human will send any external reply.

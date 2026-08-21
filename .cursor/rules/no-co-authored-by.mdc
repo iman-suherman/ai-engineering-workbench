@@ -1,0 +1,14 @@
+---
+description: Never add Co-authored-by trailers when committing
+alwaysApply: true
+---
+
+# No Co-authored-by commits
+
+When creating git commits in this repository:
+
+- Never add a `Co-authored-by:` trailer (or any co-author metadata) to the commit message.
+- Never attribute the commit to Cursor, Copilot, Gemini, or any AI agent.
+- Commit messages must contain only the human author's intended subject/body.
+- After every commit, verify `git log -1 --format='%B'` has no `Co-authored-by`.
+- If one was injected automatically and the commit is yours, unpushed, and just created: rewrite HEAD to drop the trailer before finishing.

@@ -1,0 +1,12 @@
+{
+  "name": "ai-engineering-workbench",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Open-source AI engineering workbench for multi-repo investigation",
+  "license": "MIT",
+  "scripts": {
+    "start": "bash scripts/start.sh",
+    "start:help": "bash scripts/start.sh --help",
+    "start:explain": "bash scripts/start.sh --explain-pipeline"
+  }
+}
