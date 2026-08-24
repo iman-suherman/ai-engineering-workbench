@@ -1,0 +1,244 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import TeamRegistrationForm from '../components/TeamRegistrationForm.astro';
+import {
+  TEAM_PLAN,
+  TEAM_PRICING_TIERS,
+  PLAN_COMPARISON,
+  TEAM_INCLUDES,
+  ONBOARDING_STEPS,
+  SUPPORT_DETAILS,
+  TEAM_FAQ,
+} from '../config/team';
+---
+
+<Layout
+  title="Team Plan — AI Engineering Workbench"
+  description="Managed setup, onboarding, and priority support for engineering teams. Register from $299 AUD/month."
+>
+  <Nav />
+  <main class="pt-24">
+    <section class="py-16 md:py-20">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="mx-auto max-w-3xl text-center">
+          <p class="section-label">Team plan</p>
+          <h1 class="mt-3 text-4xl font-bold tracking-tight text-ink md:text-5xl">
+            Get your team running with
+            <span class="text-gradient">evidence-first AI investigations</span>
+          </h1>
+          <p class="mt-6 text-lg text-ink-muted">{TEAM_PLAN.tagline}</p>
+          <div class="mt-8 flex flex-col items-center justify-center gap-6">
+            <div class="text-center">
+              <p class="text-4xl font-bold text-ink">
+                {TEAM_PLAN.price}
+                <span class="text-lg font-medium text-ink-muted"> {TEAM_PLAN.period}</span>
+              </p>
+              <p class="mt-1 text-sm text-ink-faint">{TEAM_PLAN.billingNote}</p>
+              <p class="mt-2 text-sm text-brand-cyan">
+                {TEAM_PLAN.annualPrice} {TEAM_PLAN.annualNote}
+              </p>
+            </div>
+            <a href="#register" class="btn-primary">{TEAM_PLAN.cta}</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-white/5 bg-surface-raised/40 py-16">
+      <div class="mx-auto max-w-4xl px-6">
+        <h2 class="text-center text-xl font-semibold text-ink">Pricing by team size</h2>
+        <div class="mt-8 grid gap-6 sm:grid-cols-2">
+          {
+            TEAM_PRICING_TIERS.map((tier) => (
+              <div class="card p-6 text-center">
+                <p class="font-semibold text-ink">{tier.seats}</p>
+                <p class="mt-2 text-2xl font-bold text-ink">{tier.monthly}</p>
+                <p class="text-sm text-ink-muted">or {tier.annual} / year</p>
+                <p class="mt-3 text-xs text-ink-faint">{tier.note}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="mx-auto max-w-2xl text-center">
+          <p class="section-label">Compare plans</p>
+          <h2 class="mt-3 text-3xl font-bold tracking-tight text-ink">Open Source vs Team</h2>
+        </div>
+        <div class="card mt-12 overflow-hidden">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-white/5 bg-surface-overlay">
+                <th class="px-6 py-4 font-medium text-ink-muted">Feature</th>
+                <th class="px-6 py-4 font-medium text-ink-muted">Open Source</th>
+                <th class="px-6 py-4 font-medium text-brand-cyan">Team</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                PLAN_COMPARISON.map((row) => (
+                  <tr class="border-b border-white/5 last:border-0">
+                    <td class="px-6 py-4 text-ink">{row.feature}</td>
+                    <td class="px-6 py-4 text-ink-muted">{row.openSource ? '✓' : '—'}</td>
+                    <td class="px-6 py-4 text-ink">{row.team ? '✓' : '—'}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-white/5 bg-surface-raised/40 py-20">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="mx-auto max-w-2xl text-center">
+          <p class="section-label">What's included</p>
+          <h2 class="mt-3 text-3xl font-bold tracking-tight text-ink">Everything you need to go live</h2>
+        </div>
+        <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {
+            TEAM_INCLUDES.map((item) => (
+              <div class="card p-6">
+                <h3 class="font-semibold text-ink">{item.title}</h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted">{item.description}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="mx-auto max-w-2xl text-center">
+          <p class="section-label">Onboarding</p>
+          <h2 class="mt-3 text-3xl font-bold tracking-tight text-ink">Four weeks to go-live</h2>
+          <p class="mt-4 text-lg text-ink-muted">
+            A clear timeline with deliverables at every step — from registration to ongoing support.
+          </p>
+        </div>
+        <div class="mt-16 space-y-4">
+          {
+            ONBOARDING_STEPS.map((step) => (
+              <div class="card flex flex-col gap-4 p-6 md:flex-row md:items-start md:gap-8">
+                <div class="flex shrink-0 items-center gap-4 md:w-40 md:flex-col md:items-start">
+                  <span class="font-mono text-2xl font-bold text-brand-blue/40">{step.step}</span>
+                  <span class="rounded-full bg-brand-blue/10 px-3 py-1 font-mono text-xs text-brand-cyan">
+                    {step.week}
+                  </span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="text-lg font-semibold text-ink">{step.title}</h3>
+                    <span class="text-xs text-ink-faint">{step.duration}</span>
+                  </div>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">{step.description}</p>
+                  <p class="mt-3 font-mono text-xs text-brand-cyan">Deliverable: {step.deliverable}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-white/5 bg-surface-raised/40 py-20">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="grid gap-12 lg:grid-cols-2">
+          <div>
+            <p class="section-label">Support</p>
+            <h2 class="mt-3 text-3xl font-bold tracking-tight text-ink">Priority help when you need it</h2>
+            <dl class="mt-8 space-y-4 text-sm">
+              <div class="flex gap-4">
+                <dt class="w-36 shrink-0 text-ink-faint">Channel</dt>
+                <dd class="text-ink">{SUPPORT_DETAILS.channel}</dd>
+              </div>
+              <div class="flex gap-4">
+                <dt class="w-36 shrink-0 text-ink-faint">Email</dt>
+                <dd>
+                  <a href="/contact?intent=support" class="text-brand-cyan hover:underline">
+                    {SUPPORT_DETAILS.address}
+                  </a>
+                </dd>
+              </div>
+              <div class="flex gap-4">
+                <dt class="w-36 shrink-0 text-ink-faint">Response SLA</dt>
+                <dd class="text-ink">{SUPPORT_DETAILS.responseTime}</dd>
+              </div>
+              <div class="flex gap-4">
+                <dt class="w-36 shrink-0 text-ink-faint">Launch blockers</dt>
+                <dd class="text-ink">{SUPPORT_DETAILS.urgentResponseTime}</dd>
+              </div>
+              <div class="flex gap-4">
+                <dt class="w-36 shrink-0 text-ink-faint">Hours</dt>
+                <dd class="text-ink">{SUPPORT_DETAILS.hours}</dd>
+              </div>
+              <div class="flex gap-4">
+                <dt class="w-36 shrink-0 text-ink-faint">Escalation</dt>
+                <dd class="text-ink-muted">{SUPPORT_DETAILS.escalation}</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="grid gap-6 sm:grid-cols-2">
+            <div class="card p-6">
+              <h3 class="font-semibold text-ink">Included</h3>
+              <ul class="mt-4 space-y-2">
+                {
+                  SUPPORT_DETAILS.included.map((item) => (
+                    <li class="flex gap-2 text-sm text-ink-muted">
+                      <span class="text-brand-cyan">✓</span>
+                      {item}
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+            <div class="card p-6">
+              <h3 class="font-semibold text-ink">Not included</h3>
+              <ul class="mt-4 space-y-2">
+                {
+                  SUPPORT_DETAILS.notIncluded.map((item) => (
+                    <li class="flex gap-2 text-sm text-ink-muted">
+                      <span class="text-ink-faint">—</span>
+                      {item}
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20">
+      <div class="mx-auto max-w-3xl px-6">
+        <div class="text-center">
+          <p class="section-label">FAQ</p>
+          <h2 class="mt-3 text-3xl font-bold tracking-tight text-ink">Common questions</h2>
+        </div>
+        <div class="mt-12 space-y-4">
+          {
+            TEAM_FAQ.map((item) => (
+              <details class="card group p-6">
+                <summary class="cursor-pointer font-semibold text-ink marker:content-none">
+                  {item.question}
+                </summary>
+                <p class="mt-4 text-sm leading-relaxed text-ink-muted">{item.answer}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <TeamRegistrationForm />
+  </main>
+  <Footer />
+</Layout>

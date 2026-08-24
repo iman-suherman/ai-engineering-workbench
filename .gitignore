@@ -9,4 +9,8 @@
 *.local.md
 .venv/
 node_modules/
+logs/*
+!logs/.gitkeep
+website/dist/
+website/.astro/
 .agent/

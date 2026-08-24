@@ -1,0 +1,52 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import ContactForm from '../components/ContactForm.astro';
+
+const intent = Astro.url.searchParams.get('intent') || 'demo';
+const formType = intent === 'enterprise' ? 'enterprise' : intent === 'support' ? 'support' : 'demo';
+const titles = {
+  demo: 'Book a demo',
+  enterprise: 'Enterprise inquiry',
+  support: 'Contact support',
+};
+const descriptions = {
+  demo: 'See how AI Engineering Workbench helps your team investigate across repositories with evidence-first AI.',
+  enterprise: 'Tell us about your organisation’s multi-repo architecture, compliance needs, and rollout goals.',
+  support: 'Questions about setup, onboarding, or your Team plan? We respond within one business day.',
+};
+---
+
+<Layout
+  title={`${titles[formType]} — AI Engineering Workbench`}
+  description={descriptions[formType]}
+>
+  <Nav />
+  <main class="pt-24">
+    <section class="py-16 md:py-20">
+      <div class="mx-auto max-w-3xl px-6">
+        <div class="text-center">
+          <p class="section-label">Contact</p>
+          <h1 class="mt-3 text-4xl font-bold tracking-tight text-ink">{titles[formType]}</h1>
+          <p class="mt-4 text-lg text-ink-muted">{descriptions[formType]}</p>
+        </div>
+
+        <div class="mt-12">
+          <ContactForm
+            formType={formType}
+            submitLabel={formType === 'demo' ? 'Book a demo' : 'Send message'}
+            showRole={formType === 'enterprise'}
+            showCompany={true}
+            showMessage={true}
+          />
+        </div>
+
+        <p class="mt-6 text-center text-sm text-ink-faint">
+          You will receive a confirmation email. We reply within one business day.
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>

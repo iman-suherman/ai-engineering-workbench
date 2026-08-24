@@ -1,0 +1,63 @@
+---
+import WorkflowDiagram from './WorkflowDiagram.astro';
+
+const steps = [
+  {
+    number: '01',
+    title: 'Ask a question',
+    description: 'Paste an enquiry — "Can we ship the gateway change?" or "Who is touching checkout-api?"',
+  },
+  {
+    number: '02',
+    title: 'Agent investigates',
+    description: 'Maps affected services, inspects live repos, PRs, branches, infra config, and existing patterns.',
+  },
+  {
+    number: '03',
+    title: 'Evidence consolidated',
+    description: 'Structured finding with evidence, risk assessment, and a clear recommended action.',
+  },
+  {
+    number: '04',
+    title: 'You decide',
+    description: 'Review the output, draft a reply if needed, and copy/paste. Nothing is sent automatically.',
+  },
+];
+---
+
+<section id="how-it-works" class="border-y border-white/5 bg-surface-raised/40 py-20 md:py-28">
+  <div class="mx-auto max-w-6xl px-6">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="section-label">How it works</p>
+      <h2 class="mt-3 text-3xl font-bold tracking-tight text-ink md:text-4xl">
+        From question to actionable finding
+      </h2>
+      <p class="mt-4 text-lg text-ink-muted">
+        A repeatable workflow your whole team can follow — whether it's a deployment check or a production incident.
+      </p>
+    </div>
+
+    <div class="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      {
+        steps.map((step, i) => (
+          <div class="relative">
+            {i < steps.length - 1 && (
+              <div class="absolute top-8 left-full hidden h-px w-full -translate-x-1/2 bg-gradient-to-r from-brand-cyan/40 to-transparent lg:block" />
+            )}
+            <div class="card p-6">
+              <span class="font-mono text-2xl font-bold text-brand-blue/40">{step.number}</span>
+              <h3 class="mt-3 text-lg font-semibold text-ink">{step.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted">{step.description}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    </div>
+
+    <div class="mt-16">
+      <WorkflowDiagram />
+    </div>
+  </div>
+</section>

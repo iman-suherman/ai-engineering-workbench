@@ -1,0 +1,263 @@
+---
+import { API_CONTACT } from '../config/contact';
+
+interface Props {
+  formType?: 'demo' | 'team' | 'enterprise' | 'support';
+  submitLabel?: string;
+  showRole?: boolean;
+  showCompany?: boolean;
+  showMessage?: boolean;
+  showTeamFields?: boolean;
+  heading?: string;
+  description?: string;
+}
+
+const {
+  formType = 'demo',
+  submitLabel = 'Send message',
+  showRole = false,
+  showCompany = true,
+  showMessage = true,
+  showTeamFields = false,
+  heading,
+  description,
+} = Astro.props;
+
+const formId = `contact-form-${formType}`;
+---
+
+<div class="card p-8">
+  {heading && <h3 class="text-xl font-semibold text-ink">{heading}</h3>}
+  {description && <p class="mt-2 text-sm text-ink-muted">{description}</p>}
+
+  <form id={formId} class="mt-6 space-y-5" data-form-type={formType} data-submit-label={submitLabel}>
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label class="mb-2 block text-sm font-medium text-ink" for={`${formId}-name`}>
+          Your name <span class="text-brand-cyan">*</span>
+        </label>
+        <input
+          id={`${formId}-name`}
+          name="name"
+          type="text"
+          required
+          autocomplete="name"
+          class="w-full rounded-xl border border-white/10 bg-surface-overlay px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-brand-blue/40"
+        />
+      </div>
+      <div>
+        <label class="mb-2 block text-sm font-medium text-ink" for={`${formId}-email`}>
+          Work email <span class="text-brand-cyan">*</span>
+        </label>
+        <input
+          id={`${formId}-email`}
+          name="email"
+          type="email"
+          required
+          autocomplete="email"
+          class="w-full rounded-xl border border-white/10 bg-surface-overlay px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-brand-blue/40"
+        />
+      </div>
+    </div>
+
+    {
+      showRole && (
+        <div>
+          <label class="mb-2 block text-sm font-medium text-ink" for={`${formId}-role`}>
+            Your role <span class="text-brand-cyan">*</span>
+          </label>
+          <input
+            id={`${formId}-role`}
+            name="role"
+            type="text"
+            required
+            placeholder="e.g. Engineering Manager"
+            class="w-full rounded-xl border border-white/10 bg-surface-overlay px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-brand-blue/40"
+          />
+        </div>
+      )
+    }
+
+    {
+      showCompany && (
+        <div>
+          <label class="mb-2 block text-sm font-medium text-ink" for={`${formId}-company`}>
+            Company / team {showTeamFields && <span class="text-brand-cyan">*</span>}
+          </label>
+          <input
+            id={`${formId}-company`}
+            name="company"
+            type="text"
+            required={showTeamFields}
+            autocomplete="organization"
+            class="w-full rounded-xl border border-white/10 bg-surface-overlay px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-brand-blue/40"
+          />
+        </div>
+      )
+    }
+
+    {
+      showTeamFields && (
+        <>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-medium text-ink" for={`${formId}-teamSize`}>
+                Engineers on team <span class="text-brand-cyan">*</span>
+              </label>
+              <select
+                id={`${formId}-teamSize`}
+                name="teamSize"
+                required
+                class="w-full rounded-xl border border-white/10 bg-surface-overlay px-4 py-3 text-sm text-ink outline-none focus:border-brand-blue/40"
+              >
+                <option value="">Select team size</option>
+                <option>1–5</option>
+                <option>6–10</option>
+                <option>11–25</option>
+                <option>26–50</option>
+                <option>50+</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-ink" for={`${formId}-kickoff`}>
+                Preferred kickoff <span class="text-brand-cyan">*</span>
+              </label>
+              <select
+                id={`${formId}-kickoff`}
+                name="kickoff"
+                required
+                class="w-full rounded-xl border border-white/10 bg-surface-overlay px-4 py-3 text-sm text-ink outline-none focus:border-brand-blue/40"
+              >
+                <option value="">Select window</option>
+                <option>This week</option>
+                <option>Next 2 weeks</option>
+                <option>This month</option>
+                <option>Next month</option>
+                <option>Flexible</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium text-ink" for={`${formId}-repos`}>
+              Repositories or services to map <span class="text-brand-cyan">*</span>
+            </label>
+            <input
+              id={`${formId}-repos`}
+              name="repos"
+              type="text"
+              required
+              placeholder="e.g. checkout-api, payments-api, edge-gateway"
+              class="w-full rounded-xl border border-white/10 bg-surface-overlay px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-brand-blue/40"
+            />
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium text-ink" for={`${formId}-billing`}>
+              Billing preference <span class="text-brand-cyan">*</span>
+            </label>
+            <select
+              id={`${formId}-billing`}
+              name="billing"
+              required
+              class="w-full rounded-xl border border-white/10 bg-surface-overlay px-4 py-3 text-sm text-ink outline-none focus:border-brand-blue/40"
+            >
+              <option value="">Select billing</option>
+              <option>Monthly</option>
+              <option>Annual (2 months free)</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+        </>
+      )
+    }
+
+    {
+      showMessage && (
+        <div>
+          <label class="mb-2 block text-sm font-medium text-ink" for={`${formId}-message`}>
+            Message {!showTeamFields && <span class="text-brand-cyan">*</span>}
+          </label>
+          <textarea
+            id={`${formId}-message`}
+            name="message"
+            rows={5}
+            required={!showTeamFields}
+            minlength={showTeamFields ? undefined : 10}
+            placeholder={showTeamFields ? 'Goals or questions (optional)' : 'How can we help?'}
+            class="w-full rounded-xl border border-white/10 bg-surface-overlay px-4 py-3 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-brand-blue/40"
+          />
+        </div>
+      )
+    }
+
+    <p id={`${formId}-error`} class="hidden text-sm text-red-400" role="alert"></p>
+    <p id={`${formId}-success`} class="hidden text-sm text-brand-cyan" role="status"></p>
+
+    <button type="submit" class="btn-primary w-full sm:w-auto">
+      <span data-submit-label>{submitLabel}</span>
+    </button>
+  </form>
+</div>
+
+<script define:vars={{ formId, apiPath: API_CONTACT }}>
+  const form = document.getElementById(formId);
+  if (!form) throw new Error(`Missing form ${formId}`);
+
+  const errorEl = document.getElementById(`${formId}-error`);
+  const successEl = document.getElementById(`${formId}-success`);
+  const submitLabel = form.querySelector('[data-submit-label]');
+  const button = form.querySelector('button[type="submit"]');
+
+  const defaultSubmitText = form.dataset.submitLabel || 'Send message';
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    errorEl?.classList.add('hidden');
+    successEl?.classList.add('hidden');
+
+    const data = new FormData(form);
+    const payload = Object.fromEntries(data.entries());
+    payload.formType = form.dataset.formType || 'demo';
+    if (!payload.message && payload.notes) payload.message = payload.notes;
+
+    button.disabled = true;
+    if (submitLabel) submitLabel.textContent = 'Sending…';
+
+    const slowTimer = window.setTimeout(() => {
+      if (submitLabel) submitLabel.textContent = 'Waking up server…';
+    }, 4000);
+
+    const controller = new AbortController();
+    const timeoutTimer = window.setTimeout(() => controller.abort(), 120000);
+
+    try {
+      const res = await fetch(apiPath, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || 'Could not send your message');
+
+      successEl.textContent = body.message || 'Message sent. Check your inbox for a confirmation email.';
+      successEl?.classList.remove('hidden');
+      form.reset();
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        errorEl.textContent =
+          'This is taking longer than expected. The server may still be starting — please wait a moment and try again, or email iman.suherman@gmail.com directly.';
+      } else if (error.message === 'Failed to fetch') {
+        errorEl.textContent =
+          'Could not reach the server. Please check your connection and try again, or email iman.suherman@gmail.com directly.';
+      } else {
+        errorEl.textContent = error.message || 'Could not send your message';
+      }
+      errorEl?.classList.remove('hidden');
+    } finally {
+      window.clearTimeout(slowTimer);
+      window.clearTimeout(timeoutTimer);
+      button.disabled = false;
+      if (submitLabel) submitLabel.textContent = defaultSubmitText;
+    }
+  });
+</script>

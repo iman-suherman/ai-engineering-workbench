@@ -1,0 +1,28 @@
+---
+import ContactForm from '../components/ContactForm.astro';
+---
+
+<section id="register" class="py-20 md:py-28">
+  <div class="mx-auto max-w-3xl px-6">
+    <div class="text-center">
+      <p class="section-label">Registration</p>
+      <h2 class="mt-3 text-3xl font-bold tracking-tight text-ink md:text-4xl">
+        Register your team
+      </h2>
+      <p class="mt-4 text-lg text-ink-muted">
+        Tell us about your engineering team. We'll confirm within one business day and send a confirmation email.
+      </p>
+    </div>
+
+    <div class="mt-12">
+      <ContactForm
+        formType="team"
+        submitLabel="Submit registration"
+        showRole={true}
+        showCompany={true}
+        showMessage={true}
+        showTeamFields={true}
+      />
+    </div>
+  </div>
+</section>

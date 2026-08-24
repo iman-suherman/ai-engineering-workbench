@@ -1,0 +1,165 @@
+---
+/** Visual workflow diagram for the investigation pipeline */
+---
+
+<div class="workflow-diagram relative mx-auto max-w-4xl overflow-hidden rounded-2xl border border-white/10 bg-surface-overlay/60 p-6 md:p-10">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(58,71,213,0.12),transparent_70%)]"></div>
+
+  <svg
+    viewBox="0 0 720 680"
+    class="relative mx-auto h-auto w-full max-w-3xl"
+    role="img"
+    aria-label="Workflow diagram: engineer question flows through AI Engineering Workbench to repositories, infrastructure, and patterns, then to consolidated finding, optional compose draft, and human review"
+  >
+    <defs>
+      <linearGradient id="flow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#00d2ff" />
+        <stop offset="50%" stop-color="#3a47d5" />
+        <stop offset="100%" stop-color="#8e2de2" />
+      </linearGradient>
+      <linearGradient id="hub-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.25" />
+        <stop offset="50%" stop-color="#3a47d5" stop-opacity="0.35" />
+        <stop offset="100%" stop-color="#8e2de2" stop-opacity="0.25" />
+      </linearGradient>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 Z" fill="#3a47d5" />
+      </marker>
+    </defs>
+
+    <!-- Connection lines -->
+    <g stroke="url(#flow-gradient)" stroke-width="2" fill="none" opacity="0.7">
+      <path d="M360 72 L360 108" marker-end="url(#arrow)" />
+      <path d="M360 168 L360 204" marker-end="url(#arrow)" />
+      <path d="M360 276 L200 320" marker-end="url(#arrow)" />
+      <path d="M360 276 L360 320" marker-end="url(#arrow)" />
+      <path d="M360 276 L520 320" marker-end="url(#arrow)" />
+      <path d="M200 372 L200 408 L360 408 L360 444" marker-end="url(#arrow)" />
+      <path d="M360 372 L360 444" marker-end="url(#arrow)" />
+      <path d="M520 372 L520 408 L360 408" fill="none" />
+      <path d="M360 492 L360 528" marker-end="url(#arrow)" />
+      <path d="M360 576 L360 600" marker-end="url(#arrow)" />
+    </g>
+
+    <!-- Engineer question -->
+    <g transform="translate(260, 24)">
+      <rect width="200" height="48" rx="12" fill="#111118" stroke="#ffffff15" stroke-width="1.5" />
+      <circle cx="28" cy="24" r="10" fill="#00d2ff20" stroke="#00d2ff" stroke-width="1.5" />
+      <path d="M24 24h8M28 20v8" stroke="#00d2ff" stroke-width="1.5" stroke-linecap="round" />
+      <text x="48" y="29" fill="#e8edf5" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">
+        Engineer question
+      </text>
+    </g>
+
+    <!-- Workbench hub -->
+    <g transform="translate(210, 108)" filter="url(#glow)">
+      <rect width="300" height="60" rx="14" fill="url(#hub-gradient)" stroke="url(#flow-gradient)" stroke-width="2" class="hub-pulse" />
+      <text x="150" y="27" text-anchor="middle" fill="#00d2ff" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1">
+        WORKBENCH
+      </text>
+      <text x="150" y="44" text-anchor="middle" fill="#e8edf5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700">
+        AI Engineering Workbench
+      </text>
+    </g>
+
+    <!-- Source nodes -->
+    <g transform="translate(130, 320)">
+      <rect width="140" height="52" rx="12" fill="#111118" stroke="#00d2ff40" stroke-width="1.5" />
+      <text x="70" y="22" text-anchor="middle" fill="#00d2ff" font-family="JetBrains Mono, monospace" font-size="9">GIT</text>
+      <text x="70" y="38" text-anchor="middle" fill="#e8edf5" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Repositories</text>
+    </g>
+
+    <g transform="translate(290, 320)">
+      <rect width="140" height="52" rx="12" fill="#111118" stroke="#3a47d540" stroke-width="1.5" />
+      <text x="70" y="22" text-anchor="middle" fill="#3a47d5" font-family="JetBrains Mono, monospace" font-size="9">INFRA</text>
+      <text x="70" y="38" text-anchor="middle" fill="#e8edf5" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Infrastructure</text>
+    </g>
+
+    <g transform="translate(450, 320)">
+      <rect width="140" height="52" rx="12" fill="#111118" stroke="#8e2de240" stroke-width="1.5" />
+      <text x="70" y="22" text-anchor="middle" fill="#8e2de2" font-family="JetBrains Mono, monospace" font-size="9">DOCS</text>
+      <text x="70" y="38" text-anchor="middle" fill="#e8edf5" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Patterns</text>
+    </g>
+
+    <!-- Consolidated finding -->
+    <g transform="translate(230, 444)">
+      <rect width="260" height="48" rx="12" fill="#111118" stroke="url(#flow-gradient)" stroke-width="1.5" />
+      <text x="130" y="29" text-anchor="middle" fill="#e8edf5" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">
+        Consolidated finding
+      </text>
+    </g>
+
+    <!-- Compose draft -->
+    <g transform="translate(245, 528)">
+      <rect width="230" height="48" rx="12" fill="#111118" stroke="#ffffff15" stroke-width="1.5" stroke-dasharray="6 4" />
+      <text x="115" y="22" text-anchor="middle" fill="#a0a0a0" font-family="JetBrains Mono, monospace" font-size="9">OPTIONAL</text>
+      <text x="115" y="38" text-anchor="middle" fill="#c8d0e0" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500">
+        Compose draft
+      </text>
+    </g>
+
+    <!-- Human review -->
+    <g transform="translate(220, 600)">
+      <rect width="280" height="48" rx="12" fill="url(#hub-gradient)" stroke="#00d2ff" stroke-width="2" />
+      <circle cx="32" cy="24" r="10" fill="#00d2ff30" stroke="#00d2ff" stroke-width="1.5" />
+      <path d="M28 26c0-2 1.8-3 4-3s4 1 4 3" stroke="#00d2ff" stroke-width="1.2" fill="none" stroke-linecap="round" />
+      <circle cx="32" cy="20" r="3" fill="#00d2ff" />
+      <text x="52" y="29" fill="#e8edf5" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700">
+        Human review → Copy/paste
+      </text>
+    </g>
+  </svg>
+
+  <!-- Legend -->
+  <div class="relative mt-6 flex flex-wrap items-center justify-center gap-4 border-t border-white/5 pt-6 text-xs text-ink-faint">
+    <span class="flex items-center gap-2">
+      <span class="h-2 w-2 rounded-full bg-brand-cyan"></span>
+      Live evidence
+    </span>
+    <span class="flex items-center gap-2">
+      <span class="h-2 w-2 rounded-full bg-brand-blue"></span>
+      Investigation hub
+    </span>
+    <span class="flex items-center gap-2">
+      <span class="h-px w-6 border-t border-dashed border-ink-faint"></span>
+      Optional step
+    </span>
+    <span class="flex items-center gap-2">
+      <span class="h-2 w-2 rounded-full bg-brand-purple"></span>
+      Human in the loop
+    </span>
+  </div>
+</div>
+
+<style>
+  .hub-pulse {
+    animation: hubGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes hubGlow {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+
+  .workflow-diagram svg path[marker-end] {
+    animation: flowDash 20s linear infinite;
+  }
+
+  @keyframes flowDash {
+    to {
+      stroke-dashoffset: -100;
+    }
+  }
+</style>

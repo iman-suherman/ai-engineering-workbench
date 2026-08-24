@@ -1,0 +1,32 @@
+---
+import Logo from './Logo.astro';
+import { TEAM_PLAN } from '../config/team';
+---
+
+<nav class="fixed top-0 z-50 w-full border-b border-white/5 bg-surface/80 backdrop-blur-xl">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <a href="/">
+      <Logo size="md" />
+    </a>
+
+    <div class="hidden items-center gap-8 md:flex">
+      <a href="/#features" class="text-sm text-ink-muted transition-colors hover:text-ink">Features</a>
+      <a href="/#how-it-works" class="text-sm text-ink-muted transition-colors hover:text-ink">How it works</a>
+      <a href="/#use-cases" class="text-sm text-ink-muted transition-colors hover:text-ink">Use cases</a>
+      <a href="/#pricing" class="text-sm text-ink-muted transition-colors hover:text-ink">Pricing</a>
+      <a href="/team" class="text-sm text-ink-muted transition-colors hover:text-ink">Team</a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a
+        href="https://github.com/iman-suherman/ai-engineering-workbench"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hidden text-sm text-ink-muted transition-colors hover:text-ink sm:block"
+      >
+        GitHub
+      </a>
+      <a href="/contact?intent=demo" class="btn-primary text-xs sm:text-sm">Book a demo</a>
+    </div>
+  </div>
+</nav>
