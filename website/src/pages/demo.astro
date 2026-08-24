@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import CodeBlock from '../components/CodeBlock.astro';
 import { DEMO_STEPS, GITHUB_REPO, LIVE_DEMO_HREF } from '../config/demo';
 ---
 
@@ -19,9 +20,9 @@ import { DEMO_STEPS, GITHUB_REPO, LIVE_DEMO_HREF } from '../config/demo';
             Try it yourself in ~10 minutes
           </h1>
           <p class="mx-auto mt-4 max-w-2xl text-lg text-ink-muted">
-            Clone the repo, run <code class="rounded bg-surface-overlay px-1.5 py-0.5 font-mono text-sm text-brand-cyan">npm run demo</code>,
-            and investigate a fictional checkout deploy question in Cursor or Copilot.
-            No live call required.
+            Clone the repo, run{' '}
+            <code class="rounded bg-surface-overlay px-1.5 py-0.5 font-mono text-sm text-brand-cyan">npm run demo</code>,
+            {' '}and investigate a fictional checkout deploy question in Cursor or Copilot. No live call required.
           </p>
         </div>
 
@@ -35,11 +36,7 @@ import { DEMO_STEPS, GITHUB_REPO, LIVE_DEMO_HREF } from '../config/demo';
                 <div class="min-w-0 flex-1">
                   <h2 class="text-lg font-semibold text-ink">{item.title}</h2>
                   <p class="mt-2 text-sm leading-relaxed text-ink-muted">{item.description}</p>
-                  {item.code && (
-                    <pre class="mt-4 overflow-x-auto rounded-xl border border-white/5 bg-surface-overlay p-4 font-mono text-xs leading-relaxed text-ink-muted md:text-sm">
-                      <code>{item.code}</code>
-                    </pre>
-                  )}
+                  {item.code && <CodeBlock code={item.code} />}
                 </div>
               </div>
             ))
