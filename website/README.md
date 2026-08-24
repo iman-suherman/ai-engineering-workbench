@@ -43,6 +43,7 @@ Use a [Gmail App Password](https://support.google.com/accounts/answer/185833) (n
 
 ```bash
 cd ai-engineering-workbench
+# Ensure podman is running (macOS): podman machine start
 # SMTP_PASS is auto-loaded from alocare-notification-service/.env when present
 npm run deploy:website
 
@@ -50,7 +51,13 @@ cd ../suherman-net-infra
 npm run cloudflare:workbench
 ```
 
-Optional: `WORKBENCH_MIN_INSTANCES=1` reduces Cloud Run cold-start latency (adds cost).
+Images push to **Artifact Registry** (`australia-southeast1-docker.pkg.dev/personal-suherman/cloudrun/workbench-website`), not GHCR.
+
+Optional env:
+- `GCP_ACCOUNT=iman.suherman@gmail.com` — gcloud account (auto-switched if wrong)
+- `CONTAINER_CLI=podman` — force podman (recommended on macOS)
+- `WORKBENCH_DEPLOY_MODE=local|cloud|auto` — build strategy (default: auto)
+- `WORKBENCH_MIN_INSTANCES=1` — reduce cold-start latency (adds cost)
 
 ## Performance notes
 

@@ -14,8 +14,9 @@ const DEPLOY_TARGETS = [
     branch: DEFAULT_BRANCH,
     npmScript: "deploy:website",
     details: [
-      "GHCR via suherman-net-infra helper: ghcr.io/iman-suherman/workbench-website:<sha>",
-      "Deploy: npm run deploy:website (build+push+Cloud Run)",
+      "Artifact Registry: australia-southeast1-docker.pkg.dev/personal-suherman/cloudrun/workbench-website:<sha>",
+      "Deploy: npm run deploy:website (build Astro + podman push + Cloud Run)",
+      "Requires: podman machine start (or CONTAINER_CLI=podman), gcloud auth",
       "DNS from suherman-net-infra: npm run cloudflare:workbench",
     ],
   },
