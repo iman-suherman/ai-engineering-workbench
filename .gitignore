@@ -11,6 +11,8 @@
 node_modules/
 logs/*
 !logs/.gitkeep
+communications/investigations/demo/*
+!communications/investigations/demo/.gitkeep
 website/dist/
 website/.astro/
 .agent/

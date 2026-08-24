@@ -8,6 +8,9 @@
     "start": "bash scripts/start.sh",
     "start:help": "bash scripts/start.sh --help",
     "start:explain": "bash scripts/start.sh --explain-pipeline",
+    "demo": "bash scripts/demo.sh",
+    "demo:help": "bash scripts/demo.sh --help",
+    "demo:explain": "bash scripts/demo.sh --explain",
     "deploy:website": "node scripts/deploy-website.cjs",
     "ci": "node scripts/ci-deploy-status.cjs",
     "ci:infra": "node scripts/run-infra-script.cjs ci"

@@ -58,6 +58,7 @@ function multilineBlock(label, value) {
 
 const FORM_LABELS = {
   demo: 'Demo request',
+  'live-demo': 'Live demo request',
   team: 'Team plan registration',
   enterprise: 'Enterprise inquiry',
   support: 'Support request',
@@ -112,42 +113,36 @@ export function adminInquiryEmail({ formType, fields }) {
   };
 }
 
-/** Demo request reply — personalised follow-up after admin notification */
+/** Demo request reply — self-serve trial + optional live session */
 export function demoReplyEmail({ name }) {
-  const title = 'Terima kasih — mari jadwalkan demo';
+  const title = 'Coba demo sendiri — AI Engineering Workbench';
   const body = `
     <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#334155;">Halo ${escapeHtml(name)},</p>
-    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;">Terima kasih sudah request demo lewat workbench.suherman.net. Pesan kamu sudah saya terima.</p>
-    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;">Ini <strong>bukan</strong> demo self-serve dari sisi user — saya yang akan memandu <strong>demo online</strong> bareng kamu (dan tim kalau ada). Kita lihat alur investigasi multi-repo, evidence-first, dan human-in-the-loop dengan Cursor/Copilot.</p>
-    <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#334155;">Yang bisa kita bahas (~30–45 menit):</p>
-    <ul style="margin:0 0 16px;padding-left:20px;color:#475569;font-size:14px;line-height:1.7;">
-      <li>Alur pertanyaan engineer → investigasi → finding / evidence / risk / recommendation</li>
-      <li>Contoh kasus: deploy check, incident, atau cross-team enquiry</li>
-      <li>Open source vs Team plan kalau relevan untuk organisasi kamu</li>
-    </ul>
-    <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#334155;">Supaya demo-nya pas, boleh info:</p>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;">Terima kasih sudah tertarik dengan AI Engineering Workbench.</p>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;">Kamu bisa <strong>langsung coba sendiri</strong> tanpa jadwal demo — sekitar 10–20 menit di Cursor atau Copilot:</p>
     <ol style="margin:0 0 16px;padding-left:20px;color:#475569;font-size:14px;line-height:1.7;">
-      <li>Ada tim/engineer lain yang ikut? (berapa orang kira-kira)</li>
-      <li>Repo atau domain yang relevan untuk contoh (nama service/repo saja, tanpa data sensitif)</li>
-      <li>2–3 opsi jadwal yang enak — misalnya Rabu–Jumat minggu ini, pagi/siang WIB</li>
+      <li>Clone: <a href="https://github.com/iman-suherman/ai-engineering-workbench" style="color:#0891b2;">github.com/iman-suherman/ai-engineering-workbench</a></li>
+      <li>Jalankan: <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;">npm run demo</code></li>
+      <li>Paste <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;">examples/demo-cursor-prompt.md</code> ke Cursor Chat</li>
     </ol>
-    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;">Balas email ini dengan jadwal yang cocok — nanti saya kirim link meet.</p>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;">Panduan lengkap: <a href="https://workbench.suherman.net/demo" style="color:#0891b2;">workbench.suherman.net/demo</a></p>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;">Kalau mau <strong>sesi live</strong> bareng saya (~30–45 menit) dengan repo/use case kamu, balas email ini dengan 2–3 opsi jadwal (WIB) dan siapa saja yang ikut.</p>
     <p style="margin:16px 0 0;font-size:14px;color:#334155;">— Iman Suherman<br /><span style="color:#64748b;">AI Engineering Workbench</span></p>
   `;
 
   const text = [
     `Halo ${name},`,
     '',
-    'Terima kasih sudah request demo lewat workbench.suherman.net.',
+    'Terima kasih sudah tertarik dengan AI Engineering Workbench.',
     '',
-    'Ini bukan demo self-serve — saya yang akan memandu demo online bareng kamu (dan tim kalau ada).',
+    'Coba demo sendiri (~10–20 menit):',
+    '1. git clone https://github.com/iman-suherman/ai-engineering-workbench.git',
+    '2. npm run demo',
+    '3. Paste examples/demo-cursor-prompt.md ke Cursor Chat',
     '',
-    'Yang bisa kita bahas (~30–45 menit):',
-    '- Alur investigasi multi-repo, evidence-first, human-in-the-loop',
-    '- Contoh kasus deploy check, incident, atau cross-team enquiry',
-    '- Open source vs Team plan',
+    'Panduan: https://workbench.suherman.net/demo',
     '',
-    'Mohon info: jumlah peserta, repo/domain contoh (jika ada), dan 2–3 opsi jadwal (WIB).',
+    'Untuk sesi live bareng saya, balas dengan jadwal (WIB) dan peserta.',
     '',
     '— Iman Suherman',
     'AI Engineering Workbench',
@@ -155,7 +150,7 @@ export function demoReplyEmail({ name }) {
   ].join('\n');
 
   return {
-    subject: 'Demo AI Engineering Workbench — jadwal singkat',
+    subject: 'Coba demo AI Engineering Workbench — npm run demo',
     html: layout({ preview: title, title, body }),
     text,
   };

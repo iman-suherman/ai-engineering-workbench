@@ -22,7 +22,9 @@ All forms POST to `/api/inquiry` and send **two emails** via Google SMTP (same a
 1. **Admin notification** → `iman.suherman@gmail.com`
 2. **Sender confirmation** → the person who submitted the form
 
-Form types: `demo`, `team`, `enterprise`, `support`
+Form types: `live-demo`, `demo` (legacy), `team`, `enterprise`, `support`
+
+Self-serve trial (no form): https://workbench.suherman.net/demo — users run `npm run demo` in the repo.
 
 Copy `website/.env.example` → `website/.env`, or rely on `alocare-notification-service/.env` locally:
 

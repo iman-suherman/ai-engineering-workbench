@@ -1,0 +1,90 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { DEMO_STEPS, GITHUB_REPO, LIVE_DEMO_HREF } from '../config/demo';
+---
+
+<Layout
+  title="Try the demo — AI Engineering Workbench"
+  description="Self-serve demo: run a fictional multi-repo investigation in Cursor or Copilot in about 10 minutes. No booking required."
+>
+  <Nav />
+  <main class="pt-24">
+    <section class="py-16 md:py-20">
+      <div class="mx-auto max-w-4xl px-6">
+        <div class="text-center">
+          <p class="section-label">Self-serve demo</p>
+          <h1 class="mt-3 text-4xl font-bold tracking-tight text-ink md:text-5xl">
+            Try it yourself in ~10 minutes
+          </h1>
+          <p class="mx-auto mt-4 max-w-2xl text-lg text-ink-muted">
+            Clone the repo, run <code class="rounded bg-surface-overlay px-1.5 py-0.5 font-mono text-sm text-brand-cyan">npm run demo</code>,
+            and investigate a fictional checkout deploy question in Cursor or Copilot.
+            No live call required.
+          </p>
+        </div>
+
+        <div class="mt-12 grid gap-6">
+          {
+            DEMO_STEPS.map((item) => (
+              <div class="card flex flex-col gap-4 p-6 md:flex-row md:items-start md:gap-8">
+                <div class="flex shrink-0 items-center gap-4 md:w-28 md:flex-col md:items-start">
+                  <span class="font-mono text-2xl font-bold text-brand-cyan/60">{item.step}</span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-lg font-semibold text-ink">{item.title}</h2>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">{item.description}</p>
+                  {item.code && (
+                    <pre class="mt-4 overflow-x-auto rounded-xl border border-white/5 bg-surface-overlay p-4 font-mono text-xs leading-relaxed text-ink-muted md:text-sm">
+                      <code>{item.code}</code>
+                    </pre>
+                  )}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="mt-12 rounded-2xl border border-brand-cyan/20 bg-brand-cyan/5 p-8 text-center">
+          <h2 class="text-xl font-semibold text-ink">What you are testing</h2>
+          <ul class="mx-auto mt-4 max-w-xl space-y-2 text-left text-sm text-ink-muted">
+            <li class="flex items-start gap-2">
+              <span class="mt-1 text-brand-cyan">→</span>
+              Service registry navigation for multi-repo enquiries
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-1 text-brand-cyan">→</span>
+              Evidence-first investigation prompts (Finding / Evidence / Risk)
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-1 text-brand-cyan">→</span>
+              Human-in-the-loop — you review before anything is sent
+            </li>
+          </ul>
+        </div>
+
+        <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <a
+            href={GITHUB_REPO}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-primary w-full sm:w-auto"
+          >
+            Clone on GitHub
+          </a>
+          <a href={LIVE_DEMO_HREF} class="btn-secondary w-full sm:w-auto">
+            Book a live demo instead
+          </a>
+        </div>
+
+        <p class="mt-8 text-center text-sm text-ink-faint">
+          Prefer a guided session with your real repos?{' '}
+          <a href={LIVE_DEMO_HREF} class="text-brand-cyan hover:underline">Book a live demo</a>
+          {' '}— ~30–45 min with Iman.
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>

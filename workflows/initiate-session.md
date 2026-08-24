@@ -21,6 +21,16 @@
 
 ## 3. Start the enquiry
 
+**First time?** Run the self-serve demo:
+
+```bash
+npm run demo
+```
+
+See `workflows/try-demo.md` for the full playbook.
+
+**Real enquiry:**
+
 ```bash
 npm run start -- --request "<request>"
 ```

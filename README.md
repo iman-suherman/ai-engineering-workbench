@@ -60,7 +60,7 @@ ai-engineering-workbench/
 ├── prompts/                  # Reusable investigation & compose prompts
 ├── workflows/                # End-to-end playbooks
 ├── communications/           # Inbox, investigation notes, archive
-├── scripts/                  # start.sh bootstrap helper
+├── scripts/                  # start.sh + demo.sh bootstrap helpers
 ├── examples/                 # Sample enquiry for a fictional demo platform
 └── .github/
     ├── copilot-instructions.md
@@ -68,6 +68,20 @@ ai-engineering-workbench/
     ├── prompts/
     └── skills/
 ```
+
+## Try the demo (self-serve)
+
+No booking required — run a fictional checkout investigation in Cursor or Copilot:
+
+```bash
+git clone https://github.com/iman-suherman/ai-engineering-workbench.git
+cd ai-engineering-workbench
+npm run demo
+```
+
+Then paste `examples/demo-cursor-prompt.md` into your agent. Full steps: `workflows/try-demo.md` · https://workbench.suherman.net/demo
+
+For a **guided live session**, use the [contact form](https://workbench.suherman.net/contact?intent=live-demo).
 
 ## Quick start
 

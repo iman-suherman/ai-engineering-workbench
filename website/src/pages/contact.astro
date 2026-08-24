@@ -4,15 +4,25 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import ContactForm from '../components/ContactForm.astro';
 
-const intent = Astro.url.searchParams.get('intent') || 'demo';
-const formType = intent === 'enterprise' ? 'enterprise' : intent === 'support' ? 'support' : 'demo';
+const intent = Astro.url.searchParams.get('intent') || 'live-demo';
+const formType =
+  intent === 'enterprise'
+    ? 'enterprise'
+    : intent === 'support'
+      ? 'support'
+      : intent === 'demo' || intent === 'live-demo'
+        ? 'live-demo'
+        : 'live-demo';
 const titles = {
-  demo: 'Book a demo',
+  'live-demo': 'Book a live demo',
+  demo: 'Book a live demo',
   enterprise: 'Enterprise inquiry',
   support: 'Contact support',
 };
 const descriptions = {
-  demo: 'See how AI Engineering Workbench helps your team investigate across repositories with evidence-first AI.',
+  'live-demo':
+    'Schedule a guided online session (~30–45 min). We walk through the workbench with your repos and use cases.',
+  demo: 'Schedule a guided online session (~30–45 min). We walk through the workbench with your repos and use cases.',
   enterprise: 'Tell us about your organisation’s multi-repo architecture, compliance needs, and rollout goals.',
   support: 'Questions about setup, onboarding, or your Team plan? We respond within one business day.',
 };
@@ -32,10 +42,16 @@ const descriptions = {
           <p class="mt-4 text-lg text-ink-muted">{descriptions[formType]}</p>
         </div>
 
-        <div class="mt-12">
+        <p class="mt-8 rounded-xl border border-brand-cyan/20 bg-brand-cyan/5 px-4 py-3 text-center text-sm text-ink-muted">
+          Want to try it yourself first?{' '}
+          <a href="/demo" class="font-medium text-brand-cyan hover:underline">Run the self-serve demo</a>
+          {' '}(~10 min, no booking).
+        </p>
+
+        <div class="mt-8">
           <ContactForm
             formType={formType}
-            submitLabel={formType === 'demo' ? 'Book a demo' : 'Send message'}
+            submitLabel="Request live demo"
             showRole={formType === 'enterprise'}
             showCompany={true}
             showMessage={true}
