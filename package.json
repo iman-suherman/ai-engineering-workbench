@@ -3,10 +3,13 @@
   "private": true,
   "version": "0.1.0",
   "description": "Open-source AI engineering workbench for multi-repo investigation",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "start": "bash scripts/start.sh",
     "start:help": "bash scripts/start.sh --help",
-    "start:explain": "bash scripts/start.sh --explain-pipeline"
+    "start:explain": "bash scripts/start.sh --explain-pipeline",
+    "deploy:website": "node scripts/deploy-website.cjs",
+    "ci": "node scripts/ci-deploy-status.cjs",
+    "ci:infra": "node scripts/run-infra-script.cjs ci"
   }
 }

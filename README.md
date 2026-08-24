@@ -106,6 +106,17 @@ Question: *Is anyone actively changing the checkout API, and can we push the gat
 4. Produce Finding / Evidence / Risk / Recommendation.
 5. Draft a short Chat reply for human review.
 
+## Marketing website
+
+A static landing page lives in [`website/`](website/) at **https://workbench.suherman.net** after deploy.
+
+```bash
+npm run deploy:website                              # Cloud Run (GHCR)
+cd ../suherman-net-infra && npm run cloudflare:workbench  # DNS + Worker
+```
+
+Local preview: `cd website && npm install && npm run dev`
+
 ## License
 
-MIT — see [LICENSE](LICENSE).
+GPL-3.0 — see [LICENSE](LICENSE).
