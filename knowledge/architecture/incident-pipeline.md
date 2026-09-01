@@ -1,115 +1,124 @@
-# Target architecture: 100% pull · multi-CJS · draft MR · human merge
+# Incident automation: pull (default) vs push (paid)
 
-Product direction for the AI-native incident loop. Complements the interactive
-playbook `workflows/incident-to-mr.md` (engineer-driven in Cursor/Codex).
+Complements the interactive playbook `workflows/incident-to-mr.md`.
+Human still **reviews, edits, and merges**. Nothing auto-merges or deploys.
 
-**Decision: run 100% pull architecture.** Stages do not push work into each other.
-Each stage **pulls** inputs from a shared artifact folder (disk or bucket mirror).
-The “pipeline” is as simple as **multi CJS** (`incident:stage:a` → `b` → `c`) plus
-chained prompts. Human still **reviews, edits, and merges**. Nothing auto-merges or deploys.
+Two product modes — same stage brain (A log → B RCA → C draft MR), different **trigger**:
+
+| Mode | Who starts it | Runtime | Availability |
+|------|---------------|---------|--------------|
+| **100% pull** | Human at 3am | Docker **up locally**; engineer pastes PagerDuty incident id; CJS retrieves context itself | Open source (default) |
+| **100% push** | PagerDuty | Docker **lives as a service**; PD webhook hits a configurable endpoint; endpoint runs the rest | **Paying (Team/Enterprise)** |
+
+Between stages, work still flows through the **artifact folder** (pull gates). “Push” means the *incident trigger*, not a spaghetti in-memory bus.
+
+---
+
+## Mode 1 — 100% pull (open source default)
+
+**Story:** on-call wakes up, brings the workbench stack up in Docker on their laptop, gives a PagerDuty id, walks away while CJS pulls context.
 
 ```text
-                    ┌─────────────────────────┐
-                    │ communications/incidents │
-                    │         /<ID>/           │
-                    │  meta, logs, rca, pr-url │
-                    └───────────▲──────────────┘
-          pull meta    pull logs│pull rca     pull pr-url
-               │            │   │    │              │
-         stage-a.cjs   stage-b.cjs  stage-c.cjs   human
-         (export logs) (agent RCA)  (agent MR)   (merge→CD)
-
-Optional: PagerDuty / cron only *drops* event.json into the folder (write sink).
-That is still pull for consumers — stages never receive an in-memory push bus.
+Human (03:00)
+  │  docker compose up   (local)
+  │  npm run incident:stage:a -- --id <PAGERDUTY_ID>
+  v
+CJS pulls from PagerDuty API → meta + trace hints
+  │  pulls logs by trace_id → logs.*
+  v
+stage-b pulls logs → agent RCA → rca.md
+  │
+stage-c pulls rca → agent draft MR → pr-url.txt
+  │
+Human reviews MR → merge → existing CD
 ```
-
-## Why 100% pull
-
-- **Resumable** — quota death mid-B does not lose Stage A logs.
-- **Simple pipeline** — multi CJS + files; no n8n required; Airflow optional later (paid).
-- **Least privilege** — each CJS only needs read on prior artifacts + its own write.
-- **Replay** — re-run `incident:stage:b` by pulling the same logs again.
-- **Prompt chaining** — CJS gates readiness; agent turns stay small and sequential.
-
-Push-style orchestrators (Jenkins/GHA/Airflow) may still *schedule* stage CJS, but
-each stage implementation stays pull-gated on the artifact contract.
-
-## Step mapping
-
-| Your step | Stage CJS | Pulls | Writes |
-|-----------|-----------|-------|--------|
-| 1–2. Trigger + trace → logs | `npm run incident:stage:a` | (creates sink) meta | meta.json + logs.* |
-| 3. Services + clone + RCA | `npm run incident:stage:b` then agent | meta + logs | rca.md |
-| 4. Patch + draft MR + notify | `npm run incident:stage:c` then agent | rca.md | pr-url.txt |
-| 5. Human merge → CD | human | pr-url | merge on GitHub/GitLab |
-
-## Multi-CJS local loop
 
 ```bash
-npm run incident:stage:a -- --id INC-123 --trace abcdef
-# export logs into communications/incidents/INC-123/logs.jsonl
-
-npm run incident:stage:b -- --id INC-123
-# refuse unless logs exist — then paste prompts/incident-to-mr.md phases 1–2 → rca.md
-
-npm run incident:stage:c -- --id INC-123
-# refuse unless rca.md exists — then phases 3–4 → draft MR + pr-url.txt
+# local docker already up
+npm run incident:stage:a -- --id PAGERDUTY-INCIDENT-ID
+# CJS retrieves PD context + prepares sink; export/pull logs into the folder
+npm run incident:stage:b -- --id PAGERDUTY-INCIDENT-ID
+npm run incident:stage:c -- --id PAGERDUTY-INCIDENT-ID
 ```
 
-Helper status/advance: `npm run incident:chain` (same artifact tree).
+No always-on webhook. No public endpoint. Engineer opts in per incident.
 
-Shared pull helpers: `scripts/incident-pull-lib.cjs`.
+---
 
-## Orchestrator skins (optional)
+## Mode 2 — 100% push (paying customers)
 
-| Option | Role under pull architecture | Availability |
-|--------|------------------------------|--------------|
-| **Multi CJS (default)** | The pipeline | Open source |
-| **Jenkins / GHA / GitLab** | Cron/webhook that *invokes* the same stage CJS | Pack / Team |
-| **Airflow** | Sensors that wait for files then run stage CJS | **Paying (Team/Enterprise)** |
-| **n8n** | Optional — not required | Optional |
-
-## Artifact contract
+**Story:** Docker image runs as a long-lived service. In PagerDuty, configure an extension/webhook URL pointing at that service. On alert, PD **hits** the endpoint; the service runs Stage A→B→C and pages/notifies the human with the draft MR link.
 
 ```text
-communications/incidents/<id>/
-  event.json          # optional drop from PagerDuty (sink)
-  meta.json           # trace_id, window, …
-  logs.jsonl|csv|txt  # Stage A
-  services.guess.json # optional
-  rca.md              # Stage B
-  pr-url.txt          # Stage C
-  chain-state.json    # bookkeeping
+PagerDuty alert
+  │  HTTPS POST  /hooks/pagerduty   (configurable URL)
+  v
+Always-on Docker service (paid)
+  │  write event → write event.json + meta.json
+  │  run stage A (pull logs)
+  │  run stage B (RCA agent/job)
+  │  run stage C (draft MR)
+  │  notify on-call (PD note / Slack / …)
+  v
+Human reviews MR → merge → existing CD
 ```
 
-## Boundaries (non-negotiable for v1)
+Requirements (paid pack — not in open-source defaults):
 
-- Draft MR/PR only; **no auto-merge**, no push to default branch.
-- No deploy from the AI path; existing main→prod CD stays authoritative.
-- No invented logs — empty query fails the stage with the exact query.
-- Patch = minimal evidenced fix.
-- Stage CJS **exit non-zero** if required pulls are missing (no silent skip ahead).
+- Stable ingress + auth on the webhook (shared secret / PD signature).
+- Secrets for PD, log vendor, git, model API.
+- Concurrency limits and redaction.
+- Same artifact contract under the hood so pull-mode debugging still works.
 
-## Interactive vs pull-chain
+Airflow / Jenkins remain optional **schedulers** around the same stages; the paid differentiator Andre named is the **always-on Docker + PD endpoint (push trigger)**.
 
-| Mode | Entry |
-|------|--------|
-| Interactive | `workflows/incident-to-mr.md` |
-| 100% pull multi-CJS | `incident:stage:a|b|c` + chained prompts |
-| Scheduled pull | Jenkins/GHA invokes the same CJS (Team) |
-| Heavy sensors | Airflow (paid) |
+---
+
+## Shared stage contract (both modes)
+
+```text
+communications/incidents/<id>/   (or bucket mirror)
+  event.json          # PD payload (push mode writes; pull mode optional)
+  meta.json
+  logs.jsonl|csv|txt
+  rca.md
+  pr-url.txt
+  chain-state.json
+```
+
+| Stage | CJS | Pulls | Writes |
+|-------|-----|-------|--------|
+| A | `incident:stage:a` | PD id / event → APIs | meta + logs |
+| B | `incident:stage:b` + agent | meta + logs | rca.md |
+| C | `incident:stage:c` + agent | rca.md | pr-url.txt (draft MR only) |
+
+Helpers: `scripts/incident-pull-lib.cjs`, `npm run incident:chain`.
+
+---
+
+## Boundaries (both modes)
+
+- Draft MR/PR only — **no auto-merge**, no push to default branch.
+- No deploy from this path; existing GitHub/GitLab CD stays authoritative.
+- No invented logs.
+- Stage CJS exits non-zero if required artifacts are missing.
+- Open-source path does **not** ship a public webhook listener by default.
+
+---
 
 ## Build order
 
-1. Multi-CJS pull gates + prompts (done / in progress).
-2. Real Stage A log export adapters (Datadog/GCP/…) per customer.
-3. Optional webhook that only writes `event.json` into the sink.
-4. Jenkinsfile pack; Airflow DAG as paid add-on.
+1. Pull mode multi-CJS + prompts (in progress).
+2. Stage A: real “retrieve from PagerDuty id” adapter (pull).
+3. Local Docker Compose recipe for on-call laptop.
+4. Paid: always-on service + `/hooks/pagerduty` + notify human.
+5. Optional: Airflow/Jenkins skins for customers who want them.
+
+---
 
 ## Related
 
 - Playbook: `workflows/incident-to-mr.md`
 - Prompt: `prompts/incident-to-mr.md`
 - Stage CJS: `scripts/incident-stage-*.cjs`
-- Chain helper: `scripts/incident-chain.cjs`
-- Registry: `knowledge/service-registry.yaml`
+- Setup: `knowledge/setup-and-integrations.md`

@@ -173,7 +173,7 @@ export const TEAM_FAQ = [
   {
     question: 'Do you offer Airflow or Jenkins for the incident → MR loop?',
     answer:
-      'Open source includes a local prompt chain (npm run incident:chain) plus the incident-to-MR playbook. Jenkins/GitHub Actions packs are easy mounts for teams. Airflow DAGs are reserved for paying Team/Enterprise customers who already run Airflow — same stage contract, different scheduler. See knowledge/architecture/incident-pipeline.md.',
+      'Open source defaults to 100% pull: on-call brings Docker up locally, passes a PagerDuty id, and multi-CJS retrieves context (npm run incident:stage:a|b|c). Paying Team/Enterprise can run 100% push: always-on Docker with a webhook URL you configure in PagerDuty so alerts hit an endpoint that runs the rest. Airflow/Jenkins are optional schedulers around the same stages. See knowledge/architecture/incident-pipeline.md.',
   },
   {
     question: 'Can we start on Open Source and upgrade later?',

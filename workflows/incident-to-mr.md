@@ -9,10 +9,9 @@ For investigate-only (no code change): stay on `workflows/production-incident.md
 For the **PagerDuty → log export → clone → draft MR → page human** target (multi-stage CI), see
 `knowledge/architecture/incident-pipeline.md`. This file is the interactive / same-brain playbook.
 
-Local chaining without Jenkins/Airflow: **100% pull** multi-CJS —
-
-`npm run incident:stage:a|b|c` (each stage pulls `communications/incidents/<ID>/`;
-prompts chain between stages). See `knowledge/architecture/incident-pipeline.md`.
+Local default: **100% pull** — on-call `docker up`, pass PagerDuty id, multi-CJS retrieves
+(`incident:stage:a|b|c`). Paying customers: **100% push** — always-on Docker webhook.
+See `knowledge/architecture/incident-pipeline.md`.
 
 ## Hard boundaries
 
