@@ -1,158 +1,115 @@
-# Target architecture: PagerDuty → log pipeline → fix MR → human
+# Target architecture: 100% pull · multi-CJS · draft MR · human merge
 
 Product direction for the AI-native incident loop. Complements the interactive
 playbook `workflows/incident-to-mr.md` (engineer-driven in Cursor/Codex).
 
-Human still **reviews, edits, and merges**. Pipelines never merge to `main` or deploy.
+**Decision: run 100% pull architecture.** Stages do not push work into each other.
+Each stage **pulls** inputs from a shared artifact folder (disk or bucket mirror).
+The “pipeline” is as simple as **multi CJS** (`incident:stage:a` → `b` → `c`) plus
+chained prompts. Human still **reviews, edits, and merges**. Nothing auto-merges or deploys.
 
 ```text
-PagerDuty
-    │  (1) trigger webhook / Events API → orchestration pipeline
-    v
-Stage A — Trace + log export
-    │  extract trace_id (and time window, service hints)
-    │  query log platform by trace_id
-    │  export artifact: json | csv | plaintext (+ metadata)
-    v
-Stage B — Scope + clone + RCA
-    │  parse artifact → candidate service names
-    │  map via service-registry.yaml (and knowledge/services/*)
-    │  shallow clone related repos (pinned default branch / SHA if known)
-    │  agent/job: correlate logs ↔ code → RCA + fix plan
-    v
-Stage C — Patch + MR + page human
-    │  new branch, minimal patch, tests if cheap
-    │  open draft MR/PR on GitHub or GitLab (never merge)
-    │  notify on-call / owning engineer (PagerDuty note, Slack, GitLab mention, …)
-    v
-Human
-    │  review, adjust, approve, merge
-    v
-Existing CD
-    deploy via normal GitHub/GitLab pipelines (unchanged)
+                    ┌─────────────────────────┐
+                    │ communications/incidents │
+                    │         /<ID>/           │
+                    │  meta, logs, rca, pr-url │
+                    └───────────▲──────────────┘
+          pull meta    pull logs│pull rca     pull pr-url
+               │            │   │    │              │
+         stage-a.cjs   stage-b.cjs  stage-c.cjs   human
+         (export logs) (agent RCA)  (agent MR)   (merge→CD)
+
+Optional: PagerDuty / cron only *drops* event.json into the folder (write sink).
+That is still pull for consumers — stages never receive an in-memory push bus.
 ```
+
+## Why 100% pull
+
+- **Resumable** — quota death mid-B does not lose Stage A logs.
+- **Simple pipeline** — multi CJS + files; no n8n required; Airflow optional later (paid).
+- **Least privilege** — each CJS only needs read on prior artifacts + its own write.
+- **Replay** — re-run `incident:stage:b` by pulling the same logs again.
+- **Prompt chaining** — CJS gates readiness; agent turns stay small and sequential.
+
+Push-style orchestrators (Jenkins/GHA/Airflow) may still *schedule* stage CJS, but
+each stage implementation stays pull-gated on the artifact contract.
 
 ## Step mapping
 
-| Your step | Pipeline stage | Inputs | Outputs | Workbench role |
-|-----------|----------------|--------|---------|----------------|
-| 1. PagerDuty → pipeline | Orchestrator entry | Incident ID, urgency, payload | Run id, normalized event | Optional: write `context/active-incidents.md` stub |
-| 2. Trace → log export | Stage A | `trace_id`, window | Log artifact (json/csv/txt) + query used | None (platform-specific job) |
-| 3. Services + clone + check logs | Stage B | Artifact, registry | Checkout dir(s), RCA note | **Registry + architecture knowledge**; same RCA shape as `prompts/incident-to-mr.md` phase 2 |
-| 4. Patch branch + MR + call human | Stage C | RCA, checkouts | Draft MR URL, notify | Agent fix rules from incident-to-mr phases 3–4; notify is **outside** open-source “never auto-send” default (dedicated runner secrets) |
-| 5. Human review → merge → CD | Human + existing CI | MR | Merged main → deploy | Human owns merge; CD stays as today |
+| Your step | Stage CJS | Pulls | Writes |
+|-----------|-----------|-------|--------|
+| 1–2. Trigger + trace → logs | `npm run incident:stage:a` | (creates sink) meta | meta.json + logs.* |
+| 3. Services + clone + RCA | `npm run incident:stage:b` then agent | meta + logs | rca.md |
+| 4. Patch + draft MR + notify | `npm run incident:stage:c` then agent | rca.md | pr-url.txt |
+| 5. Human merge → CD | human | pr-url | merge on GitHub/GitLab |
 
-## Orchestrator (what “pipeline” means here)
-
-**Pipeline = stage orchestrator**, not a requirement to buy n8n.
-
-Stages A → B → C are plain jobs with a shared **artifact contract**. Any runner that can sequence jobs, pass an object-store/path, and inject secrets works.
-
-| Option | Fit | Effort to install | Availability |
-|--------|-----|-------------------|--------------|
-| **Local prompt chain + CJS** | Default open-source path: `npm run incident:chain` advances A→B→C via artifact folder; each stage is a separate agent turn + `prompts/incident-to-mr.md` | Low | Open source |
-| **Scripts + webhook worker** | Same stages, triggered by PagerDuty webhook | Low | Open source / Team |
-| **Jenkins** (`Jenkinsfile`) | Easy drop-in where Jenkins already exists | Low–medium | Pack / Team |
-| **GitHub Actions / GitLab CI** | Webhook → workflow_dispatch / pipeline API | Low–medium | Pack / Team |
-| **Airflow** | Retries, sensors, SLAs when you already run Airflow | Medium (ops weight) | **Paying (Team/Enterprise)** |
-| **n8n / low-code** | Optional visual wiring — **not required** | Low if n8n exists | Optional |
-
-### Local chaining (yes, it works)
-
-Prompt chaining locally does **not** need one mega-context. Pattern (same idea as knowledge bootstrap):
-
-1. CJS creates `communications/incidents/<ID>/` + `chain-state.json`.
-2. Stage A writes log files (no model).
-3. **New agent turn** runs Stage B prompt only → `rca.md`.
-4. Advance state; **new agent turn** runs Stage C → draft MR + `pr-url.txt`.
-5. If quota dies mid-stage, resume from the artifact folder — do not re-export logs.
+## Multi-CJS local loop
 
 ```bash
-npm run incident:chain -- init --id INC-123 --trace abcdef
-# …export logs into communications/incidents/INC-123/
-npm run incident:chain -- advance --id INC-123 --to b-rca
-npm run incident:chain -- next --id INC-123   # prints which prompt/phase to paste
+npm run incident:stage:a -- --id INC-123 --trace abcdef
+# export logs into communications/incidents/INC-123/logs.jsonl
+
+npm run incident:stage:b -- --id INC-123
+# refuse unless logs exist — then paste prompts/incident-to-mr.md phases 1–2 → rca.md
+
+npm run incident:stage:c -- --id INC-123
+# refuse unless rca.md exists — then phases 3–4 → draft MR + pr-url.txt
 ```
 
-Airflow (and heavier multi-tenant orchestration) is reserved for **paying customers**; open source keeps the stage contract + local CJS chain + interactive playbook.
+Helper status/advance: `npm run incident:chain` (same artifact tree).
 
-Recommended packaging for an “offer something easy to mount”:
+Shared pull helpers: `scripts/incident-pull-lib.cjs`.
 
-1. Keep **stage containers/scripts** orchestrator-agnostic (`stage-a-export`, `stage-b-rca`, `stage-c-mr`).
-2. Ship **local CJS chain** first (above).
-3. Ship a **Jenkinsfile** (and optionally GHA/GitLab) that calls the same stages + artifact bucket.
-4. **Airflow DAG** as a paid pack — same stage images, different scheduler.
-5. Document n8n only as “if you insist on low-code.”
+## Orchestrator skins (optional)
 
-Do not couple the workbench prompts/registry to one orchestrator brand. The brain stays in this repo; Jenkins/Airflow/GHA are installable skins.
+| Option | Role under pull architecture | Availability |
+|--------|------------------------------|--------------|
+| **Multi CJS (default)** | The pipeline | Open source |
+| **Jenkins / GHA / GitLab** | Cron/webhook that *invokes* the same stage CJS | Pack / Team |
+| **Airflow** | Sensors that wait for files then run stage CJS | **Paying (Team/Enterprise)** |
+| **n8n** | Optional — not required | Optional |
 
-## Why split stages (still)
-
-- **Token / failure isolation** — Stage A can succeed and cache the log file if Stage B OOMs or the model quota dies.
-- **Least privilege** — Stage A needs log-store credentials only; Stage C needs git write + MR API only.
-- **Replay** — Re-run B/C from the same artifact without re-hitting the log vendor.
-- **Matches unitized bootstrap lesson** — big one-shot runs are fragile; staged artifacts are resumable.
-
-## Artifact contract (suggested)
-
-Pass a single directory or object-store prefix between stages, e.g.:
+## Artifact contract
 
 ```text
-incident-<id>/
-  event.json          # pagerduty payload (redacted)
-  meta.json           # trace_id, window_start, window_end, source
-  logs.jsonl          # or logs.csv / logs.txt
-  services.guess.json # optional pre-parse of service names from log lines
-  rca.md              # written by Stage B
-  pr-url.txt          # written by Stage C
+communications/incidents/<id>/
+  event.json          # optional drop from PagerDuty (sink)
+  meta.json           # trace_id, window, …
+  logs.jsonl|csv|txt  # Stage A
+  services.guess.json # optional
+  rca.md              # Stage B
+  pr-url.txt          # Stage C
+  chain-state.json    # bookkeeping
 ```
-
-Keep PII / secrets out of artifacts that land in public forks. Prefer private bucket + short TTL.
-
-## Service name resolution
-
-Order of preference in Stage B:
-
-1. Explicit service fields in log labels / resource attributes.
-2. Matches against `knowledge/service-registry.yaml` keys, `repo`, and `tags`.
-3. Heuristics from logger names / K8s workload (record as low confidence).
-4. If ambiguous → **draft MR skipped**; notify human with candidates only.
-
-Do not clone the whole org. Cap clones (e.g. top 1–3 services by confidence).
 
 ## Boundaries (non-negotiable for v1)
 
 - Draft MR/PR only; **no auto-merge**, no push to default branch.
-- No deploy from the AI pipeline; existing main→prod pipelines stay authoritative.
-- No invented logs — if the query returns empty, fail the stage with the exact query.
-- Patch scope = minimal fix for evidenced cause; no drive-by refactors.
-- Notify human with MR link + RCA summary; do not silently page the whole company.
+- No deploy from the AI path; existing main→prod CD stays authoritative.
+- No invented logs — empty query fails the stage with the exact query.
+- Patch = minimal evidenced fix.
+- Stage CJS **exit non-zero** if required pulls are missing (no silent skip ahead).
 
-## Interactive vs automated
+## Interactive vs pull-chain
 
-| Mode | When | Entry |
-|------|------|--------|
-| Interactive | Engineer already in Cursor/Codex with the incident | `workflows/incident-to-mr.md` |
-| Local chain | Same laptop; CJS advances stages between agent turns | `npm run incident:chain` + incident-to-mr phases |
-| Automated | PagerDuty fires, want async draft MR | Jenkins / GHA / GitLab (Team pack) or **Airflow (paid)** |
+| Mode | Entry |
+|------|--------|
+| Interactive | `workflows/incident-to-mr.md` |
+| 100% pull multi-CJS | `incident:stage:a|b|c` + chained prompts |
+| Scheduled pull | Jenkins/GHA invokes the same CJS (Team) |
+| Heavy sensors | Airflow (paid) |
 
-Same RCA/fix/MR **prompt contract**; different trigger and packaging.
+## Build order
 
-## Build order (practical)
-
-1. **Stage A only** — PagerDuty webhook → extract `trace_id` → export logs to artifact (no AI). Prove signal quality.
-2. **Stage B read-only** — artifact + registry → RCA markdown + service list (no clone write, no MR).
-3. **Stage C draft MR** — one service, draft PR, notify one human.
-4. Harden: multi-service, GitLab + GitHub, confidence gates, redaction, quotas.
-
-Workbench open-source today: **prompt/workflow brain** + **local CJS stage chain**.
-Jenkins/GHA packs = easy mount for teams. **Airflow DAG reserved for paying customers**
-(Team/Enterprise). Stage contract stays shared so orchestrators stay swappable.
+1. Multi-CJS pull gates + prompts (done / in progress).
+2. Real Stage A log export adapters (Datadog/GCP/…) per customer.
+3. Optional webhook that only writes `event.json` into the sink.
+4. Jenkinsfile pack; Airflow DAG as paid add-on.
 
 ## Related
 
 - Playbook: `workflows/incident-to-mr.md`
 - Prompt: `prompts/incident-to-mr.md`
-- Local chain: `npm run incident:chain` → `scripts/incident-chain.cjs`
+- Stage CJS: `scripts/incident-stage-*.cjs`
+- Chain helper: `scripts/incident-chain.cjs`
 - Registry: `knowledge/service-registry.yaml`
-- Setup overview: `knowledge/setup-and-integrations.md`

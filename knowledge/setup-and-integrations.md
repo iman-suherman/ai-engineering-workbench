@@ -45,8 +45,8 @@ You are done with setup when a multi-repo question resolves services from the re
 | **Registry from Terraform / Helm** | `prompts/fill-service-registry-from-infra.md` | Discovery hints → same YAML (not live TF state) | Easy–medium |
 | **Manual context files** | `context/*.md` | Sprint / incident urgency | Easy |
 | **Incident → MR loop** | `workflows/incident-to-mr.md` + `prompts/incident-to-mr.md` | Logs → RCA → fix → draft PR; human reviews (no auto-merge) | Medium (needs log access) |
-| **Local incident chain (CJS)** | `npm run incident:chain` | Prompt-chain A→B→C on disk artifacts; no n8n/Airflow required | Easy |
-| **PagerDuty → pipeline (target)** | `knowledge/architecture/incident-pipeline.md` | Staged orchestrator; Jenkins/GHA packs; **Airflow = paid** | Harder |
+| **Local incident chain (CJS)** | `npm run incident:stage:a\|b\|c` + `incident:chain` | **100% pull** multi-CJS; prompt-chain between stages | Easy |
+| **PagerDuty → pipeline (target)** | `knowledge/architecture/incident-pipeline.md` | Same pull stages; Jenkins/GHA schedule; **Airflow = paid** | Harder |
 | **Jira / Jira SM → incidents** | Env + `npm run sync:incidents -- --provider jira` → `context/active-incidents.md` | Auto-fill active incidents | Medium (API token + JQL) |
 | **ServiceNow → incidents** | Env + `--provider servicenow` → same file | Same | Medium (instance + basic auth) |
 | **Chat / Slack / Teams / email** | Compose prompts only | Draft replies — **never auto-send** | Easy |
