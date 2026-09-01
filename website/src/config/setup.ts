@@ -74,6 +74,7 @@ export const JIRA_TOUCHPOINTS = [
 ] as const;
 
 export const OTHER_INTEGRATIONS = [
+  { name: 'Incident → MR', note: 'Logs → RCA → fix → draft PR; human reviews — workflows/incident-to-mr.md' },
   { name: 'Unitized knowledge bootstrap', note: 'Plan + one-service units — token-effective, resumable' },
   { name: 'ServiceNow', note: 'Same incident sync path: --provider servicenow' },
   { name: 'Chat / Slack / Teams', note: 'Compose drafts only — never auto-send' },

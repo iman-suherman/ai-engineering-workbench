@@ -44,7 +44,7 @@ You are done with setup when a multi-repo question resolves services from the re
 | **Fill-registry prompt** | `prompts/fill-service-registry.md` | Small-estate single-shot YAML | Easy |
 | **Registry from Terraform / Helm** | `prompts/fill-service-registry-from-infra.md` | Discovery hints → same YAML (not live TF state) | Easy–medium |
 | **Manual context files** | `context/*.md` | Sprint / incident urgency | Easy |
-| **Jira ticket analysis** | Paste + `prompts/jira-analysis.md` / `compose-jira.md` | Investigate & draft — human posts | Easy |
+| **Incident → MR loop** | `workflows/incident-to-mr.md` + `prompts/incident-to-mr.md` | Logs → RCA → fix → draft PR; human reviews (no auto-merge) | Medium (needs log access) |
 | **Jira / Jira SM → incidents** | Env + `npm run sync:incidents -- --provider jira` → `context/active-incidents.md` | Auto-fill active incidents | Medium (API token + JQL) |
 | **ServiceNow → incidents** | Env + `--provider servicenow` → same file | Same | Medium (instance + basic auth) |
 | **Chat / Slack / Teams / email** | Compose prompts only | Draft replies — **never auto-send** | Easy |
