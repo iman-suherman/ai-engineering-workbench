@@ -76,8 +76,8 @@ export const JIRA_TOUCHPOINTS = [
 export const OTHER_INTEGRATIONS = [
   { name: 'Incident → MR', note: 'Logs → RCA → fix → draft PR; human reviews — workflows/incident-to-mr.md' },
   {
-    name: 'PagerDuty orchestrator (target)',
-    note: 'Stages A–C; local CJS chain open source; Jenkins/GHA pack; Airflow for paying customers',
+    name: 'PagerDuty / incident pull pipeline',
+    note: '100% pull multi-CJS (stage a→b→c); Jenkins/GHA optional; Airflow for paying customers',
   },
   { name: 'Unitized knowledge bootstrap', note: 'Plan + one-service units — token-effective, resumable' },
   { name: 'ServiceNow', note: 'Same incident sync path: --provider servicenow' },
