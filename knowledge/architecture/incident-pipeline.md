@@ -106,6 +106,14 @@ Helpers: `scripts/incident-pull-lib.cjs`, `npm run incident:chain`.
 
 ---
 
+## Dogfood test cases
+
+Prove the loop on a real estate (private). Prioritise failure modes Andre called out:
+token exhaustion mid-setup, RCA not found, human rejects RCA — see
+`knowledge/architecture/dogfood-failure-modes.md`.
+
+---
+
 ## Build order
 
 1. Pull mode multi-CJS + prompts (in progress).

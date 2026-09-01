@@ -41,3 +41,5 @@ A single "scan everything and write all knowledge" run fails halfway when tokens
 - Registry keys match how the team names services in Chat.
 - `knowledge/architecture/overview.md` reflects connected service notes (not sample fiction).
 - At least one multi-repo investigation resolves the right `local_path`.
+
+Failure-mode checklist (quota mid-setup, etc.): `knowledge/architecture/dogfood-failure-modes.md`.
