@@ -161,6 +161,16 @@ export const TEAM_FAQ = [
       'Form submissions are sent by email only — we do not store registration data in a database on workbench.suherman.net.',
   },
   {
+    question: 'Do we need Jira or ServiceNow to use the workbench?',
+    answer:
+      'No. Setup is clone + fill service-registry.yaml + investigate. Jira is optional: paste tickets for analysis, or sync open incidents with an API token into context/active-incidents.md. See /setup and knowledge/integrations/jira.md.',
+  },
+  {
+    question: 'Where does the service registry come from — Terraform or Helm?',
+    answer:
+      'The registry is always knowledge/service-registry.yaml. Draft from sibling folders, gh, Terraform/Helm hints, or by hand. For many repos use the unitized bootstrap (plan + one service per turn) so quota limits do not kill a half-finished setup — workflows/bootstrap-knowledge.md. Infra sources are discovery hints, not a live feed from Terraform state.',
+  },
+  {
     question: 'Can we start on Open Source and upgrade later?',
     answer:
       'Yes. Many teams clone the repo first, then upgrade to Team when they want hands-on registry setup and training.',
@@ -168,7 +178,7 @@ export const TEAM_FAQ = [
   {
     question: 'What do we need before kickoff?',
     answer:
-      'A list of repositories and services your team investigates, who owns each, and at least one real enquiry you want the workbench to handle.',
+      'A list of repositories and services your team investigates, who owns each, and at least one real enquiry you want the workbench to handle. Optional: Terraform/Helm paths or Jira access if you want those wired during onboarding.',
   },
   {
     question: 'How is billing handled?',

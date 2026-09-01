@@ -1,0 +1,168 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import {
+  SETUP_PHASES,
+  REGISTRY_SOURCES,
+  JIRA_TOUCHPOINTS,
+  OTHER_INTEGRATIONS,
+  SETUP_DOCS,
+} from '../config/setup';
+---
+
+<Layout
+  title="Setup & integrations — AI Engineering Workbench"
+  description="Setup first without hard integrations. Fill the service registry from siblings, Terraform, or Helm. Optional Jira and ServiceNow sync."
+>
+  <Nav />
+  <main class="pt-24">
+    <section class="py-16 md:py-20">
+      <div class="mx-auto max-w-4xl px-6">
+        <div class="text-center">
+          <p class="section-label">Setup & integrations</p>
+          <h1 class="mt-3 text-4xl font-bold tracking-tight text-ink md:text-5xl">
+            Setup first. Integrations only when useful.
+          </h1>
+          <p class="mx-auto mt-4 max-w-2xl text-lg text-ink-muted">
+            The workbench runs without Jira, ServiceNow, or MCP. Fill the registry, investigate live repos, then add optional syncs.
+          </p>
+        </div>
+
+        <div class="mt-14 space-y-6">
+          {
+            SETUP_PHASES.map((item) => (
+              <div class="card flex flex-col gap-4 p-6 md:flex-row md:items-start md:gap-8">
+                <div class="flex shrink-0 items-center gap-4 md:w-28 md:flex-col md:items-start">
+                  <span class="font-mono text-2xl font-bold text-brand-cyan/60">{item.step}</span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-lg font-semibold text-ink">{item.title}</h2>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">{item.description}</p>
+                  <CodeBlock code={item.detail} />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section id="registry" class="border-y border-white/5 bg-surface-raised/40 py-16 md:py-20">
+      <div class="mx-auto max-w-4xl px-6">
+        <p class="section-label">Service registry sources</p>
+        <h2 class="mt-3 text-3xl font-bold tracking-tight text-ink">Where can the registry come from?</h2>
+        <p class="mt-4 text-ink-muted">
+          Output is always <code class="rounded bg-surface-overlay px-1.5 py-0.5 font-mono text-sm text-brand-cyan">knowledge/service-registry.yaml</code>.
+          Terraform and Helm are discovery inputs — not a live feed from state.
+        </p>
+        <div class="mt-8 overflow-x-auto rounded-xl border border-white/10">
+          <table class="w-full min-w-[32rem] text-left text-sm">
+            <thead class="bg-surface-overlay/60 text-ink-muted">
+              <tr>
+                <th class="px-4 py-3 font-medium">Source</th>
+                <th class="px-4 py-3 font-medium">How you use it</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                REGISTRY_SOURCES.map((row) => (
+                  <tr class="border-t border-white/5">
+                    <td class="px-4 py-3 font-medium text-ink">{row.source}</td>
+                    <td class="px-4 py-3 text-ink-muted">{row.use}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-6 text-sm text-ink-faint">
+          Many siblings? Prefer the unitized bootstrap (plan once, one service per turn) so a token-quota cut does not trash a half-finished setup — see{' '}
+          <a
+            href={`${SETUP_DOCS.github}/blob/main/workflows/bootstrap-knowledge.md`}
+            class="text-brand-cyan hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            workflows/bootstrap-knowledge.md
+          </a>
+          . Infra-assisted fill:{' '}
+          <a
+            href={`${SETUP_DOCS.github}/blob/main/prompts/fill-service-registry-from-infra.md`}
+            class="text-brand-cyan hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            fill-service-registry-from-infra.md
+          </a>
+        </p>
+      </div>
+    </section>
+
+    <section id="jira" class="py-16 md:py-20">
+      <div class="mx-auto max-w-4xl px-6">
+        <p class="section-label">Jira</p>
+        <h2 class="mt-3 text-3xl font-bold tracking-tight text-ink">How Jira integration works</h2>
+        <p class="mt-4 text-ink-muted">
+          Three levels — start with paste-only analysis. API sync is optional for active incidents.
+        </p>
+        <div class="mt-10 grid gap-6">
+          {
+            JIRA_TOUCHPOINTS.map((item) => (
+              <div class="card p-6">
+                <div class="flex flex-wrap items-center gap-3">
+                  <h3 class="text-lg font-semibold text-ink">{item.title}</h3>
+                  <span class="rounded-full border border-brand-cyan/30 px-2.5 py-0.5 text-xs text-brand-cyan">
+                    {item.effort}
+                  </span>
+                </div>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted">{item.description}</p>
+              </div>
+            ))
+          }
+        </div>
+        <div class="mt-8">
+          <p class="mb-2 text-sm text-ink-muted">Incident sync (optional)</p>
+          <CodeBlock code={`cp .env.example .env
+# JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN
+npm run sync:incidents -- --provider jira --dry-run
+npm run sync:incidents -- --provider jira`} />
+        </div>
+        <p class="mt-6 text-sm text-ink-faint">
+          Full guide:{' '}
+          <a href={SETUP_DOCS.jiraDoc} class="text-brand-cyan hover:underline" target="_blank" rel="noopener noreferrer">
+            knowledge/integrations/jira.md
+          </a>
+        </p>
+      </div>
+    </section>
+
+    <section class="border-t border-white/5 bg-surface-raised/40 py-16 md:py-20">
+      <div class="mx-auto max-w-4xl px-6">
+        <p class="section-label">Also optional</p>
+        <h2 class="mt-3 text-2xl font-bold tracking-tight text-ink">Other integrations</h2>
+        <ul class="mt-8 space-y-4">
+          {
+            OTHER_INTEGRATIONS.map((item) => (
+              <li class="flex items-start gap-3 text-sm">
+                <span class="mt-1 text-brand-cyan">→</span>
+                <span>
+                  <span class="font-medium text-ink">{item.name}</span>
+                  <span class="text-ink-muted"> — {item.note}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <a href={SETUP_DOCS.github} class="btn-primary w-full sm:w-auto" target="_blank" rel="noopener noreferrer">
+            Open repo on GitHub
+          </a>
+          <a href="/demo" class="btn-secondary w-full sm:w-auto">Try the demo</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>

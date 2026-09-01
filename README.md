@@ -101,11 +101,13 @@ npm run start -- --request "Can we ship the API gateway change for checkout?"
 
 ## Customize for your org
 
+Setup order and where integrations plug in: [`knowledge/setup-and-integrations.md`](knowledge/setup-and-integrations.md) · site: [workbench.suherman.net/setup](https://workbench.suherman.net/setup).
+
 | Replace | With |
 |---------|------|
-| Sample services in `knowledge/service-registry.yaml` | Your real service → repo map |
+| Sample services in `knowledge/service-registry.yaml` | Your real service → repo map (`prompts/fill-service-registry.md` or `-from-infra` for Terraform/Helm) |
 | `knowledge/local-repos.md` sibling paths | Your local checkout layout |
-| `context/*` placeholders | Your sprint / incident notes |
+| `context/*` placeholders | Your sprint / incident notes (optional: `npm run sync:incidents`) |
 | Compose prompt channel names | Slack, Teams, Chat, email — whatever you use |
 
 Keep proprietary architecture, credentials, and customer data **out** of any public fork.
