@@ -42,7 +42,30 @@ Existing CD
 | 4. Patch branch + MR + call human | Stage C | RCA, checkouts | Draft MR URL, notify | Agent fix rules from incident-to-mr phases 3–4; notify is **outside** open-source “never auto-send” default (dedicated runner secrets) |
 | 5. Human review → merge → CD | Human + existing CI | MR | Merged main → deploy | Human owns merge; CD stays as today |
 
-## Why split pipelines
+## Orchestrator (what “pipeline” means here)
+
+**Pipeline = stage orchestrator**, not a requirement to buy n8n.
+
+Stages A → B → C are plain jobs with a shared **artifact contract**. Any runner that can sequence jobs, pass an object-store/path, and inject secrets works.
+
+| Option | Fit | Effort to install |
+|--------|-----|-------------------|
+| **Scripts + webhook worker** | Smallest; one service invokes A then B then C | Low |
+| **Jenkins** (`Jenkinsfile`) | Easy drop-in where Jenkins already exists; familiar to many platform teams | Low–medium |
+| **GitHub Actions / GitLab CI** | Same idea as Jenkins; trigger from PagerDuty webhook → `workflow_dispatch` / pipeline API | Low–medium |
+| **Airflow** | Strong when you already run Airflow; retries, sensors, SLAs on Stage A log pulls | Medium (ops weight) |
+| **n8n / low-code** | Optional for teams that want visual wiring — **not required** | Low if n8n exists |
+
+Recommended packaging for an “offer something easy to mount”:
+
+1. Keep **stage containers/scripts** orchestrator-agnostic (`stage-a-export`, `stage-b-rca`, `stage-c-mr`).
+2. Ship a **Jenkinsfile** (and optionally `.github/workflows/incident-draft-mr.yml`) that only wires those stages + artifact bucket.
+3. Offer an **Airflow DAG** as an alternate pack for shops already on Airflow — same stage images, different scheduler.
+4. Document n8n only as “if you insist on low-code.”
+
+Do not couple the workbench prompts/registry to one orchestrator brand. The brain stays in this repo; Jenkins/Airflow/GHA are installable skins.
+
+## Why split stages (still)
 
 - **Token / failure isolation** — Stage A can succeed and cache the log file if Stage B OOMs or the model quota dies.
 - **Least privilege** — Stage A needs log-store credentials only; Stage C needs git write + MR API only.
@@ -89,7 +112,7 @@ Do not clone the whole org. Cap clones (e.g. top 1–3 services by confidence).
 | Mode | When | Entry |
 |------|------|--------|
 | Interactive | Engineer already in Cursor/Codex with the incident | `workflows/incident-to-mr.md` |
-| Automated | PagerDuty fires, want async draft MR | This architecture (CI/CD or worker + agent) |
+| Automated | PagerDuty fires, want async draft MR | This architecture + any orchestrator (Jenkins / GHA / GitLab / Airflow / worker) |
 
 Same RCA/fix/MR **prompt contract**; different trigger and packaging.
 
@@ -100,7 +123,9 @@ Same RCA/fix/MR **prompt contract**; different trigger and packaging.
 3. **Stage C draft MR** — one service, draft PR, notify one human.
 4. Harden: multi-service, GitLab + GitHub, confidence gates, redaction, quotas.
 
-Workbench open-source today covers the **prompt/workflow brain** for B/C interactive use. Automated Stage A–C runners are Team/Enterprise or in-house CI glued to this repo’s prompts and registry.
+Workbench open-source today covers the **prompt/workflow brain** for B/C interactive use.
+Automated Stage A–C runners are Team/Enterprise or in-house CI: glue Jenkinsfile / GHA / Airflow DAG
+to this repo’s prompts, registry, and artifact contract — orchestrator is swappable.
 
 ## Related
 

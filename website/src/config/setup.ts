@@ -75,6 +75,10 @@ export const JIRA_TOUCHPOINTS = [
 
 export const OTHER_INTEGRATIONS = [
   { name: 'Incident → MR', note: 'Logs → RCA → fix → draft PR; human reviews — workflows/incident-to-mr.md' },
+  {
+    name: 'PagerDuty orchestrator (target)',
+    note: 'Stages A–C; mount on Jenkins, GHA/GitLab, or Airflow — not n8n-required',
+  },
   { name: 'Unitized knowledge bootstrap', note: 'Plan + one-service units — token-effective, resumable' },
   { name: 'ServiceNow', note: 'Same incident sync path: --provider servicenow' },
   { name: 'Chat / Slack / Teams', note: 'Compose drafts only — never auto-send' },
