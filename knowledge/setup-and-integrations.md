@@ -45,6 +45,7 @@ You are done with setup when a multi-repo question resolves services from the re
 | **Registry from Terraform / Helm** | `prompts/fill-service-registry-from-infra.md` | Discovery hints → same YAML (not live TF state) | Easy–medium |
 | **Manual context files** | `context/*.md` | Sprint / incident urgency | Easy |
 | **Incident → MR loop** | `workflows/incident-to-mr.md` + `prompts/incident-to-mr.md` | Logs → RCA → fix → draft PR; human reviews (no auto-merge) | Medium (needs log access) |
+| **PagerDuty → pipeline (target)** | `knowledge/architecture/incident-pipeline.md` | Staged: trace export → clone/RCA → draft MR → notify human → human merge/CD | Harder (CI + log + git APIs) |
 | **Jira / Jira SM → incidents** | Env + `npm run sync:incidents -- --provider jira` → `context/active-incidents.md` | Auto-fill active incidents | Medium (API token + JQL) |
 | **ServiceNow → incidents** | Env + `--provider servicenow` → same file | Same | Medium (instance + basic auth) |
 | **Chat / Slack / Teams / email** | Compose prompts only | Draft replies — **never auto-send** | Easy |
@@ -77,5 +78,7 @@ Details:
 - Overview on the site: https://workbench.suherman.net/setup
 - Quota-safe bootstrap: `workflows/bootstrap-knowledge.md` + `prompts/bootstrap-knowledge-*.md`
 - Registry fill: `knowledge/service-registry-howto.md` + fill / infra prompts
+- Incident → MR (interactive): `workflows/incident-to-mr.md`
+- PagerDuty → MR pipeline (target): `knowledge/architecture/incident-pipeline.md`
 - Jira: `knowledge/integrations/jira.md`
 - Incident sync: `knowledge/integrations/incident-sources.md` + `scripts/sync-incidents.cjs`

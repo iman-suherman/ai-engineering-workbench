@@ -6,6 +6,9 @@ Use when an active production incident needs a code fix, not only a stakeholder 
 
 For investigate-only (no code change): stay on `workflows/production-incident.md`.
 
+For the **PagerDuty → log export → clone → draft MR → page human** target (multi-stage CI), see
+`knowledge/architecture/incident-pipeline.md`. This file is the interactive / same-brain playbook.
+
 ## Hard boundaries
 
 | Allowed (with explicit human OK) | Never |
