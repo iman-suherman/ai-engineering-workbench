@@ -48,20 +48,41 @@ Existing CD
 
 Stages A → B → C are plain jobs with a shared **artifact contract**. Any runner that can sequence jobs, pass an object-store/path, and inject secrets works.
 
-| Option | Fit | Effort to install |
-|--------|-----|-------------------|
-| **Scripts + webhook worker** | Smallest; one service invokes A then B then C | Low |
-| **Jenkins** (`Jenkinsfile`) | Easy drop-in where Jenkins already exists; familiar to many platform teams | Low–medium |
-| **GitHub Actions / GitLab CI** | Same idea as Jenkins; trigger from PagerDuty webhook → `workflow_dispatch` / pipeline API | Low–medium |
-| **Airflow** | Strong when you already run Airflow; retries, sensors, SLAs on Stage A log pulls | Medium (ops weight) |
-| **n8n / low-code** | Optional for teams that want visual wiring — **not required** | Low if n8n exists |
+| Option | Fit | Effort to install | Availability |
+|--------|-----|-------------------|--------------|
+| **Local prompt chain + CJS** | Default open-source path: `npm run incident:chain` advances A→B→C via artifact folder; each stage is a separate agent turn + `prompts/incident-to-mr.md` | Low | Open source |
+| **Scripts + webhook worker** | Same stages, triggered by PagerDuty webhook | Low | Open source / Team |
+| **Jenkins** (`Jenkinsfile`) | Easy drop-in where Jenkins already exists | Low–medium | Pack / Team |
+| **GitHub Actions / GitLab CI** | Webhook → workflow_dispatch / pipeline API | Low–medium | Pack / Team |
+| **Airflow** | Retries, sensors, SLAs when you already run Airflow | Medium (ops weight) | **Paying (Team/Enterprise)** |
+| **n8n / low-code** | Optional visual wiring — **not required** | Low if n8n exists | Optional |
+
+### Local chaining (yes, it works)
+
+Prompt chaining locally does **not** need one mega-context. Pattern (same idea as knowledge bootstrap):
+
+1. CJS creates `communications/incidents/<ID>/` + `chain-state.json`.
+2. Stage A writes log files (no model).
+3. **New agent turn** runs Stage B prompt only → `rca.md`.
+4. Advance state; **new agent turn** runs Stage C → draft MR + `pr-url.txt`.
+5. If quota dies mid-stage, resume from the artifact folder — do not re-export logs.
+
+```bash
+npm run incident:chain -- init --id INC-123 --trace abcdef
+# …export logs into communications/incidents/INC-123/
+npm run incident:chain -- advance --id INC-123 --to b-rca
+npm run incident:chain -- next --id INC-123   # prints which prompt/phase to paste
+```
+
+Airflow (and heavier multi-tenant orchestration) is reserved for **paying customers**; open source keeps the stage contract + local CJS chain + interactive playbook.
 
 Recommended packaging for an “offer something easy to mount”:
 
 1. Keep **stage containers/scripts** orchestrator-agnostic (`stage-a-export`, `stage-b-rca`, `stage-c-mr`).
-2. Ship a **Jenkinsfile** (and optionally `.github/workflows/incident-draft-mr.yml`) that only wires those stages + artifact bucket.
-3. Offer an **Airflow DAG** as an alternate pack for shops already on Airflow — same stage images, different scheduler.
-4. Document n8n only as “if you insist on low-code.”
+2. Ship **local CJS chain** first (above).
+3. Ship a **Jenkinsfile** (and optionally GHA/GitLab) that calls the same stages + artifact bucket.
+4. **Airflow DAG** as a paid pack — same stage images, different scheduler.
+5. Document n8n only as “if you insist on low-code.”
 
 Do not couple the workbench prompts/registry to one orchestrator brand. The brain stays in this repo; Jenkins/Airflow/GHA are installable skins.
 
@@ -112,7 +133,8 @@ Do not clone the whole org. Cap clones (e.g. top 1–3 services by confidence).
 | Mode | When | Entry |
 |------|------|--------|
 | Interactive | Engineer already in Cursor/Codex with the incident | `workflows/incident-to-mr.md` |
-| Automated | PagerDuty fires, want async draft MR | This architecture + any orchestrator (Jenkins / GHA / GitLab / Airflow / worker) |
+| Local chain | Same laptop; CJS advances stages between agent turns | `npm run incident:chain` + incident-to-mr phases |
+| Automated | PagerDuty fires, want async draft MR | Jenkins / GHA / GitLab (Team pack) or **Airflow (paid)** |
 
 Same RCA/fix/MR **prompt contract**; different trigger and packaging.
 
@@ -123,13 +145,14 @@ Same RCA/fix/MR **prompt contract**; different trigger and packaging.
 3. **Stage C draft MR** — one service, draft PR, notify one human.
 4. Harden: multi-service, GitLab + GitHub, confidence gates, redaction, quotas.
 
-Workbench open-source today covers the **prompt/workflow brain** for B/C interactive use.
-Automated Stage A–C runners are Team/Enterprise or in-house CI: glue Jenkinsfile / GHA / Airflow DAG
-to this repo’s prompts, registry, and artifact contract — orchestrator is swappable.
+Workbench open-source today: **prompt/workflow brain** + **local CJS stage chain**.
+Jenkins/GHA packs = easy mount for teams. **Airflow DAG reserved for paying customers**
+(Team/Enterprise). Stage contract stays shared so orchestrators stay swappable.
 
 ## Related
 
 - Playbook: `workflows/incident-to-mr.md`
 - Prompt: `prompts/incident-to-mr.md`
+- Local chain: `npm run incident:chain` → `scripts/incident-chain.cjs`
 - Registry: `knowledge/service-registry.yaml`
 - Setup overview: `knowledge/setup-and-integrations.md`

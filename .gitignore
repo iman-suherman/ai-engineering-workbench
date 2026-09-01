@@ -13,6 +13,8 @@ logs/*
 !logs/.gitkeep
 communications/investigations/demo/*
 !communications/investigations/demo/.gitkeep
+communications/incidents/*
+!communications/incidents/.gitkeep
 website/dist/
 website/.astro/
 .agent/

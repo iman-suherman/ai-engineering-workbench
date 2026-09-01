@@ -171,6 +171,11 @@ export const TEAM_FAQ = [
       'The registry is always knowledge/service-registry.yaml. Draft from sibling folders, gh, Terraform/Helm hints, or by hand. For many repos use the unitized bootstrap (plan + one service per turn) so quota limits do not kill a half-finished setup — workflows/bootstrap-knowledge.md. Infra sources are discovery hints, not a live feed from Terraform state.',
   },
   {
+    question: 'Do you offer Airflow or Jenkins for the incident → MR loop?',
+    answer:
+      'Open source includes a local prompt chain (npm run incident:chain) plus the incident-to-MR playbook. Jenkins/GitHub Actions packs are easy mounts for teams. Airflow DAGs are reserved for paying Team/Enterprise customers who already run Airflow — same stage contract, different scheduler. See knowledge/architecture/incident-pipeline.md.',
+  },
+  {
     question: 'Can we start on Open Source and upgrade later?',
     answer:
       'Yes. Many teams clone the repo first, then upgrade to Team when they want hands-on registry setup and training.',

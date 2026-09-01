@@ -9,6 +9,9 @@ For investigate-only (no code change): stay on `workflows/production-incident.md
 For the **PagerDuty → log export → clone → draft MR → page human** target (multi-stage CI), see
 `knowledge/architecture/incident-pipeline.md`. This file is the interactive / same-brain playbook.
 
+Local chaining without Jenkins/Airflow: `npm run incident:chain` (CJS advances A→B→C via
+`communications/incidents/<ID>/`; each stage is a separate agent turn for quota safety).
+
 ## Hard boundaries
 
 | Allowed (with explicit human OK) | Never |

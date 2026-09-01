@@ -12,6 +12,7 @@
     "demo:help": "bash scripts/demo.sh --help",
     "demo:explain": "bash scripts/demo.sh --explain",
     "sync:incidents": "node scripts/sync-incidents.cjs",
+    "incident:chain": "node scripts/incident-chain.cjs",
     "deploy:website": "node scripts/deploy-website.cjs",
     "ci": "node scripts/ci-deploy-status.cjs",
     "ci:infra": "node scripts/run-infra-script.cjs ci"
